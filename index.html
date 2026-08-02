@@ -1,0 +1,1409 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>小卡收藏</title>
+
+  <!-- iPhone / iPad 專屬 PNG 桌面圖示 (粉紅底 + 白色蝴蝶結 🎀) -->
+  <link rel="apple-touch-icon" sizes="180x180" id="appleTouchIcon" href="">
+  <link rel="icon" type="image/png" sizes="192x192" id="faviconPng" href="">
+
+  <!-- iOS PWA 獨立 App 設定 -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="小卡收藏">
+
+  <!-- 即時繪製 iPhone 專用 PNG 高畫質圖示 -->
+  <script>
+    (function generatePNGIcon() {
+      try {
+        var canvas = document.createElement('canvas');
+        canvas.width = 180;
+        canvas.height = 180;
+        var ctx = canvas.getContext('2d');
+
+        // 1. 粉色底色 #EDA0CE (圓角矩形)
+        ctx.fillStyle = '#EDA0CE';
+        ctx.beginPath();
+        var r = 36;
+        ctx.moveTo(r, 0);
+        ctx.lineTo(180 - r, 0);
+        ctx.quadraticCurveTo(180, 0, 180, r);
+        ctx.lineTo(180, 180 - r);
+        ctx.quadraticCurveTo(180, 180, 180 - r, 180);
+        ctx.lineTo(r, 180);
+        ctx.quadraticCurveTo(0, 180, 0, 180 - r);
+        ctx.lineTo(0, r);
+        ctx.quadraticCurveTo(0, 0, r, 0);
+        ctx.closePath();
+        ctx.fill();
+
+        // 2. 繪製精緻白色蝴蝶結 🎀
+        ctx.fillStyle = '#FFFFFF';
+        
+        // 左翅膀
+        ctx.beginPath();
+        ctx.moveTo(90, 90);
+        ctx.bezierCurveTo(60, 50, 30, 60, 40, 85);
+        ctx.bezierCurveTo(45, 100, 70, 95, 90, 90);
+        ctx.fill();
+
+        // 右翅膀
+        ctx.beginPath();
+        ctx.moveTo(90, 90);
+        ctx.bezierCurveTo(120, 50, 150, 60, 140, 85);
+        ctx.bezierCurveTo(135, 100, 110, 95, 90, 90);
+        ctx.fill();
+
+        // 飄帶
+        ctx.beginPath();
+        ctx.moveTo(85, 92);
+        ctx.lineTo(55, 135);
+        ctx.lineTo(70, 135);
+        ctx.lineTo(88, 98);
+        ctx.fill();
+
+        ctx.beginPath();
+        ctx.moveTo(95, 92);
+        ctx.lineTo(125, 135);
+        ctx.lineTo(110, 135);
+        ctx.lineTo(92, 98);
+        ctx.fill();
+
+        // 中間結
+        ctx.beginPath();
+        ctx.arc(90, 90, 11, 0, Math.PI * 2);
+        ctx.fill();
+
+        var pngDataUrl = canvas.toDataURL('image/png');
+        
+        window.addEventListener('DOMContentLoaded', function() {
+          var appleIcon = document.getElementById('appleTouchIcon');
+          var favIcon = document.getElementById('faviconPng');
+          if (appleIcon) appleIcon.href = pngDataUrl;
+          if (favIcon) favIcon.href = pngDataUrl;
+        });
+      } catch(e) {}
+    })();
+  </script>
+
+  <style>
+    :root {
+      --primary: #EDA0CE;
+      --primary-dark: #D87BB3;
+      --primary-light: #FDF0F7;
+      --bg-color: #F8F9FA;
+      --card-bg: #FFFFFF;
+      --text-main: #2D3748;
+      --text-muted: #718096;
+      --radius-lg: 16px;
+      --radius-md: 12px;
+      --shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      background-color: var(--bg-color);
+      color: var(--text-main);
+      padding-bottom: 60px;
+      min-height: 100vh;
+    }
+
+    /* 頂部 Header */
+    header {
+      background: #FFFFFF;
+      padding: 14px 18px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 90;
+      box-shadow: 0 2px 10px rgba(237, 160, 206, 0.18);
+      border-bottom: 1px solid #F0F0F0;
+    }
+
+    header h1 {
+      font-size: 1.25rem;
+      font-weight: 800;
+      color: var(--primary);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .status-badge {
+      font-size: 0.72rem;
+      background: var(--primary-light);
+      color: var(--primary-dark);
+      padding: 4px 10px;
+      border-radius: 12px;
+      font-weight: 700;
+    }
+
+    /* 導航列與搜尋 */
+    .nav-bar {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      padding: 12px 16px;
+      background: #FFFFFF;
+      border-bottom: 1px solid #EDF2F7;
+    }
+
+    .nav-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .path-title {
+      font-weight: 700;
+      font-size: 1rem;
+      color: var(--text-main);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .search-box {
+      width: 100%;
+      position: relative;
+    }
+
+    .search-box input {
+      width: 100%;
+      padding: 9px 14px 9px 36px;
+      border-radius: 20px;
+      border: 1px solid #E2E8F0;
+      background: #F7FAFC;
+      font-size: 0.88rem;
+      outline: none;
+    }
+
+    .search-box input:focus {
+      border-color: var(--primary);
+      background: #FFF;
+    }
+
+    .search-icon {
+      position: absolute;
+      left: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+
+    /* 按鈕樣式 */
+    .btn-group {
+      display: flex;
+      gap: 6px;
+    }
+
+    .btn {
+      background: var(--primary);
+      color: white;
+      border: none;
+      padding: 9px 15px;
+      border-radius: 20px;
+      font-weight: 700;
+      font-size: 0.85rem;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      box-shadow: 0 2px 8px rgba(237, 160, 206, 0.45);
+      touch-action: manipulation;
+    }
+
+    .btn:active {
+      transform: scale(0.96);
+      opacity: 0.9;
+    }
+
+    .btn-secondary {
+      background: #EDF2F7;
+      color: var(--text-main);
+      box-shadow: none;
+    }
+
+    .btn-icon {
+      background: #F7FAFC;
+      border: 1px solid #E2E8F0;
+      color: var(--text-main);
+      padding: 6px 10px;
+      border-radius: 12px;
+      font-size: 0.8rem;
+      cursor: pointer;
+    }
+
+    .section-title {
+      padding: 14px 16px 6px;
+      font-size: 0.82rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      letter-spacing: 0.5px;
+    }
+
+    /* 資料夾網格 */
+    .folder-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+      padding: 0 16px 16px;
+    }
+
+    .folder-card {
+      position: relative;
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      aspect-ratio: 3/4;
+      background: #E2E8F0;
+      box-shadow: var(--shadow);
+      cursor: pointer;
+      border: 1px solid #F0F0F0;
+    }
+
+    .folder-card img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .folder-overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to top, rgba(0, 0, 0, 0.82) 0%, rgba(0, 0, 0, 0.15) 60%, rgba(0, 0, 0, 0) 100%);
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      padding: 12px;
+      color: white;
+    }
+
+    .folder-name {
+      font-weight: 700;
+      font-size: 0.95rem;
+      text-shadow: 0 1px 3px rgba(0,0,0,0.6);
+    }
+
+    .folder-count {
+      font-size: 0.72rem;
+      opacity: 0.88;
+      margin-top: 2px;
+    }
+
+    .folder-actions {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      display: flex;
+      gap: 6px;
+      z-index: 10;
+    }
+
+    .btn-circle {
+      background: rgba(0, 0, 0, 0.55);
+      color: white;
+      border: none;
+      border-radius: 50%;
+      width: 30px;
+      height: 30px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.8rem;
+      cursor: pointer;
+      backdrop-filter: blur(4px);
+    }
+
+    /* 小卡網格 */
+    .card-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+      padding: 0 16px 16px;
+    }
+
+    .photocard-item {
+      background: var(--card-bg);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      box-shadow: var(--shadow);
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      border: 1px solid #F0F0F0;
+      cursor: pointer;
+    }
+
+    .photocard-item img {
+      width: 100%;
+      aspect-ratio: 3/4;
+      object-fit: cover;
+      background: #EDF2F7;
+    }
+
+    .photocard-info {
+      padding: 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+
+    .tag-badge {
+      align-self: flex-start;
+      font-size: 0.65rem;
+      background: var(--primary-light);
+      color: var(--primary-dark);
+      padding: 2px 7px;
+      border-radius: 10px;
+      font-weight: 700;
+    }
+
+    .double-side-badge {
+      position: absolute;
+      bottom: 8px;
+      right: 8px;
+      font-size: 0.65rem;
+      background: rgba(0, 0, 0, 0.6);
+      color: white;
+      padding: 2px 6px;
+      border-radius: 8px;
+      backdrop-filter: blur(4px);
+    }
+
+    .photocard-title {
+      font-size: 0.88rem;
+      font-weight: 700;
+      color: var(--text-main);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .photocard-meta {
+      font-size: 0.72rem;
+      color: var(--text-muted);
+      display: flex;
+      justify-content: space-between;
+      margin-top: 2px;
+    }
+
+    /* 切換卡面/卡背按鈕 */
+    .photo-toggle-tabs {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+
+    .toggle-tab-btn {
+      flex: 1;
+      padding: 8px;
+      border: 1px solid #E2E8F0;
+      border-radius: 20px;
+      background: #F8FAFC;
+      color: var(--text-muted);
+      font-size: 0.82rem;
+      font-weight: 700;
+      cursor: pointer;
+      text-align: center;
+    }
+
+    .toggle-tab-btn.active {
+      background: var(--primary-light);
+      color: var(--primary-dark);
+      border-color: var(--primary);
+    }
+
+    /* Modal 彈出視窗 */
+    .modal {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.55);
+      z-index: 200;
+      backdrop-filter: blur(4px);
+      justify-content: center;
+      align-items: flex-end;
+    }
+
+    .modal.active {
+      display: flex;
+    }
+
+    .modal-content {
+      background: white;
+      width: 100%;
+      max-width: 500px;
+      padding: 22px;
+      border-radius: 20px 20px 0 0;
+      max-height: 85vh;
+      overflow-y: auto;
+      animation: slideUp 0.25s ease-out;
+    }
+
+    @keyframes slideUp {
+      from { transform: translateY(100%); }
+      to { transform: translateY(0); }
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 14px;
+    }
+
+    .modal-header h3 {
+      font-size: 1.1rem;
+      color: var(--text-main);
+      font-weight: 800;
+    }
+
+    .form-group {
+      margin-bottom: 12px;
+    }
+
+    .form-group label {
+      display: block;
+      font-size: 0.78rem;
+      font-weight: 700;
+      margin-bottom: 5px;
+      color: var(--text-muted);
+    }
+
+    .form-group input, .form-group select, .form-group textarea {
+      width: 100%;
+      padding: 10px 12px;
+      border: 1px solid #E2E8F0;
+      border-radius: var(--radius-md);
+      font-size: 0.88rem;
+      outline: none;
+      background: #F8FAFC;
+    }
+
+    .form-group textarea {
+      resize: vertical;
+      height: 65px;
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 40px 20px;
+      color: var(--text-muted);
+      font-size: 0.88rem;
+    }
+
+    .empty-state div {
+      font-size: 2.2rem;
+      margin-bottom: 8px;
+    }
+
+    .toast {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%) translateY(100px);
+      background: rgba(45, 55, 72, 0.92);
+      color: white;
+      padding: 8px 16px;
+      border-radius: 20px;
+      font-size: 0.82rem;
+      z-index: 300;
+      transition: transform 0.3s ease;
+      backdrop-filter: blur(4px);
+    }
+
+    .toast.show {
+      transform: translateX(-50%) translateY(0);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- 頂部 Header -->
+  <header>
+    <h1>💖 小卡收藏</h1>
+    <div class="header-right">
+      <div class="status-badge" id="statsBadge">共 0 張收藏</div>
+      <button class="btn-icon" onclick="openModal('backupModal')">⚙️ 備份</button>
+    </div>
+  </header>
+
+  <!-- 導航列與搜尋 -->
+  <div class="nav-bar">
+    <div class="nav-top">
+      <div class="path-title">
+        <button class="btn btn-secondary" id="backBtn" onclick="goBack()" style="display:none; padding: 4px 10px; font-size:0.75rem;">⬅ 返回</button>
+        <span id="currentPath">首頁</span>
+      </div>
+      <div class="btn-group">
+        <button class="btn" type="button" onclick="openModal('folderModal')">＋ 資料夾</button>
+        <button class="btn" type="button" id="addCardBtn" onclick="openModal('cardModal')" style="display:none;">＋ 小卡</button>
+      </div>
+    </div>
+
+    <div class="search-box">
+      <span class="search-icon">🔍</span>
+      <input type="text" id="searchInput" placeholder="搜尋小卡名稱、分類或管道..." oninput="handleSearch()">
+    </div>
+  </div>
+
+  <!-- 資料夾展示區 -->
+  <div id="folderSection" style="display:none;">
+    <div class="section-title">資料夾</div>
+    <div class="folder-grid" id="folderGrid"></div>
+  </div>
+
+  <!-- 小卡展示區 -->
+  <div id="cardSection" style="display:none;">
+    <div class="section-title">小卡收藏</div>
+    <div class="card-grid" id="cardGrid"></div>
+  </div>
+
+  <!-- 空白提示區 -->
+  <div class="empty-state" id="emptyState" style="display:none;">
+    <div>🎀</div>
+    <p>這裡還沒有資料夾或小卡喔！<br>點擊上方按鈕開始建立吧！</p>
+  </div>
+
+  <!-- 新增資料夾 Modal -->
+  <div class="modal" id="folderModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>新增資料夾</h3>
+        <span style="cursor:pointer; font-size:1.2rem;" onclick="closeModal('folderModal')">✕</span>
+      </div>
+      <div class="form-group">
+        <label>資料夾名稱 / 偶像成員</label>
+        <input type="text" id="folderName" placeholder="例如：都敬秀 / 專輯卡">
+      </div>
+      <div class="form-group">
+        <label>封面照片 (選填)</label>
+        <input type="file" id="folderCover" accept="image/*">
+      </div>
+      <button class="btn" type="button" id="btnCreateFolder" style="width:100%; padding:12px; margin-top:8px;" onclick="addFolder()">建立資料夾</button>
+    </div>
+  </div>
+
+  <!-- 編輯資料夾 Modal -->
+  <div class="modal" id="editFolderModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>✏️ 編輯資料夾</h3>
+        <span style="cursor:pointer; font-size:1.2rem;" onclick="closeModal('editFolderModal')">✕</span>
+      </div>
+      <div class="form-group">
+        <label>資料夾名稱</label>
+        <input type="text" id="editFolderName">
+      </div>
+      <div class="form-group">
+        <label>更換封面照片 (不選擇則保留原圖)</label>
+        <input type="file" id="editFolderCover" accept="image/*">
+      </div>
+      <button class="btn" type="button" id="btnUpdateFolder" style="width:100%; padding:12px; margin-top:8px;" onclick="saveEditFolder()">儲存修改</button>
+    </div>
+  </div>
+
+  <!-- 新增小卡 Modal (雙照片支援) -->
+  <div class="modal" id="cardModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>新增小卡紀錄</h3>
+        <span style="cursor:pointer; font-size:1.2rem;" onclick="closeModal('cardModal')">✕</span>
+      </div>
+      <div class="form-group">
+        <label>小卡名稱 / 版本</label>
+        <input type="text" id="cardName" placeholder="例如：Exist 專輯通路特典 卡面A">
+      </div>
+      <div class="form-group">
+        <label>📷 小卡正面照片 (卡面)</label>
+        <input type="file" id="cardImageFront" accept="image/*">
+      </div>
+      <div class="form-group">
+        <label>📷 小卡背面照片 (卡背 - 選填)</label>
+        <input type="file" id="cardImageBack" accept="image/*">
+      </div>
+      <div class="form-group">
+        <label>卡片分類</label>
+        <select id="cardCategory" onchange="toggleCustomCategory(this)">
+          <option value="專輯卡">專輯卡</option>
+          <option value="特典卡">特典卡</option>
+          <option value="周邊卡">周邊卡</option>
+          <option value="快閃店/展覽">快閃店 / 展覽</option>
+          <option value="其他">其他 (自訂分類)</option>
+        </select>
+        <input type="text" id="customCategory" placeholder="請輸入自訂分類名稱" style="display:none; margin-top:8px;">
+      </div>
+      <div class="form-group">
+        <label>入手價格 ($ NTD)</label>
+        <input type="number" id="cardPrice" placeholder="例如：350">
+      </div>
+      <div class="form-group">
+        <label>入手管道</label>
+        <input type="text" id="cardSource" placeholder="例如：Soundwave / 社團拆售">
+      </div>
+      <div class="form-group">
+        <label>備註 (卡況、交換意願等)</label>
+        <textarea id="cardNote" placeholder="例如：無瑕拆封、可換同款燦烈"></textarea>
+      </div>
+      <button class="btn" type="button" id="btnCreateCard" style="width:100%; padding:12px; margin-top:8px;" onclick="addCard()">儲存小卡</button>
+    </div>
+  </div>
+
+  <!-- 編輯小卡 Modal -->
+  <div class="modal" id="editCardModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>✏️ 編輯小卡資料</h3>
+        <span style="cursor:pointer; font-size:1.2rem;" onclick="closeModal('editCardModal')">✕</span>
+      </div>
+      <div class="form-group">
+        <label>小卡名稱 / 版本</label>
+        <input type="text" id="editCardName">
+      </div>
+      <div class="form-group">
+        <label>更換正面照片 (卡面 - 不選則保留原圖)</label>
+        <input type="file" id="editCardImageFront" accept="image/*">
+      </div>
+      <div class="form-group">
+        <label>更換背面照片 (卡背 - 不選則保留原圖)</label>
+        <input type="file" id="editCardImageBack" accept="image/*">
+      </div>
+      <div class="form-group">
+        <label>卡片分類</label>
+        <select id="editCardCategory" onchange="toggleCustomCategoryEdit(this)">
+          <option value="專輯卡">專輯卡</option>
+          <option value="特典卡">特典卡</option>
+          <option value="周邊卡">周邊卡</option>
+          <option value="快閃店/展覽">快閃店 / 展覽</option>
+          <option value="其他">其他 (自訂分類)</option>
+        </select>
+        <input type="text" id="editCustomCategory" placeholder="請輸入自訂分類名稱" style="display:none; margin-top:8px;">
+      </div>
+      <div class="form-group">
+        <label>入手價格 ($ NTD)</label>
+        <input type="number" id="editCardPrice">
+      </div>
+      <div class="form-group">
+        <label>入手管道</label>
+        <input type="text" id="editCardSource">
+      </div>
+      <div class="form-group">
+        <label>備註</label>
+        <textarea id="editCardNote"></textarea>
+      </div>
+      <button class="btn" type="button" id="btnUpdateCard" style="width:100%; padding:12px; margin-top:8px;" onclick="saveEditCard()">儲存修改</button>
+    </div>
+  </div>
+
+  <!-- 查看小卡詳情 Modal (支援正面/背面切換) -->
+  <div class="modal" id="detailModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 id="detailTitle">小卡詳情</h3>
+        <span style="cursor:pointer; font-size:1.2rem;" onclick="closeModal('detailModal')">✕</span>
+      </div>
+
+      <!-- 切換正面/背面圖片頁籤 -->
+      <div class="photo-toggle-tabs" id="photoToggleContainer" style="display:none;">
+        <button class="toggle-tab-btn active" id="btnTabFront" onclick="switchDetailPhoto('front')">🌸 卡面 (正面)</button>
+        <button class="toggle-tab-btn" id="btnTabBack" onclick="switchDetailPhoto('back')">🌸 卡背 (背面)</button>
+      </div>
+
+      <div style="position:relative;">
+        <img id="detailImage" src="" style="width:100%; aspect-ratio:3/4; object-fit:cover; border-radius:12px; margin-bottom:12px;">
+      </div>
+
+      <div style="display:flex; flex-direction:column; gap:8px; font-size:0.88rem;">
+        <div>🏷️ <strong>分類：</strong> <span id="detailCategory"></span></div>
+        <div>💰 <strong>入手價格：</strong> <span id="detailPrice"></span></div>
+        <div>🛒 <strong>入手管道：</strong> <span id="detailSource"></span></div>
+        <div>📝 <strong>備註：</strong> <span id="detailNote" style="white-space:pre-line; color:#555;"></span></div>
+      </div>
+
+      <div style="display:flex; gap:8px; margin-top:16px;">
+        <button class="btn" type="button" style="flex:1; padding:10px; justify-content:center;" onclick="triggerEditFromDetail()">✏️ 編輯這張小卡</button>
+        <button class="btn btn-secondary" type="button" style="padding:10px 16px;" onclick="closeModal('detailModal')">關閉</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 備份與還原 Modal -->
+  <div class="modal" id="backupModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>⚙️ 資料備份與設定</h3>
+        <span style="cursor:pointer; font-size:1.2rem;" onclick="closeModal('backupModal')">✕</span>
+      </div>
+      <p style="font-size:0.8rem; color:var(--text-muted); margin-bottom:14px;">
+        資料已使用手機 IndexedDB 高容量資料庫永久儲存。您也可以匯出 JSON 備份檔保存。
+      </p>
+
+      <div style="display:flex; flex-direction:column; gap:10px;">
+        <button class="btn" type="button" style="width:100%; padding:11px;" onclick="exportData()">📥 匯出資料備份 (.json)</button>
+        <div style="border-top:1px dashed #E2E8F0; margin:4px 0;"></div>
+        <div class="form-group">
+          <label>📤 匯入還原資料文件</label>
+          <input type="file" id="importFileInput" accept=".json" onchange="importData(event)">
+        </div>
+      </div>
+
+      <button class="btn btn-secondary" type="button" style="width:100%; padding:9px; margin-top:10px;" onclick="closeModal('backupModal')">關閉</button>
+    </div>
+  </div>
+
+  <div class="toast" id="toast">已更新資料</div>
+
+  <!-- 核心高容量 IndexedDB 本機持久化邏輯 -->
+  <script>
+    var DB_NAME = 'PhotocardApp_DB';
+    var DB_VERSION = 1;
+    var dbInstance = null;
+    var appData = { folders: [], cards: [] };
+
+    var currentFolderId = null;
+    var folderStack = [];
+    var editingFolderId = null;
+    var editingCardId = null;
+    var currentDetailCard = null;
+
+    function initStorage() {
+      return new Promise(function(resolve) {
+        if (!window.indexedDB) {
+          loadFromFallback();
+          return resolve();
+        }
+
+        var request = window.indexedDB.open(DB_NAME, DB_VERSION);
+        request.onupgradeneeded = function(e) {
+          var db = e.target.result;
+          if (!db.objectStoreNames.contains('store')) {
+            db.createObjectStore('store', { keyPath: 'id' });
+          }
+        };
+
+        request.onsuccess = function(e) {
+          dbInstance = e.target.result;
+          loadFromDB().then(resolve);
+        };
+
+        request.onerror = function() {
+          loadFromFallback();
+          resolve();
+        };
+      });
+    }
+
+    function loadFromDB() {
+      return new Promise(function(resolve) {
+        if (!dbInstance) {
+          loadFromFallback();
+          return resolve();
+        }
+        try {
+          var tx = dbInstance.transaction('store', 'readonly');
+          var store = tx.objectStore('store');
+          var req = store.get('master_data');
+          req.onsuccess = function() {
+            if (req.result && req.result.data) {
+              appData = req.result.data;
+            } else {
+              loadFromFallback();
+            }
+            resolve();
+          };
+          req.onerror = function() {
+            loadFromFallback();
+            resolve();
+          };
+        } catch(e) {
+          loadFromFallback();
+          resolve();
+        }
+      });
+    }
+
+    function loadFromFallback() {
+      var ls = localStorage.getItem('photocard_backup_ls');
+      if (ls) {
+        try { appData = JSON.parse(ls); } catch(e){}
+      }
+    }
+
+    function saveData() {
+      if (dbInstance) {
+        try {
+          var tx = dbInstance.transaction('store', 'readwrite');
+          var store = tx.objectStore('store');
+          store.put({ id: 'master_data', data: appData });
+        } catch(e) {
+          console.error("IndexedDB Save Error:", e);
+        }
+      }
+      try {
+        localStorage.setItem('photocard_backup_ls', JSON.stringify(appData));
+      } catch(e) {}
+    }
+
+    function openModal(id) {
+      var target = document.getElementById(id);
+      if (target) target.classList.add('active');
+    }
+
+    function closeModal(id) {
+      var target = document.getElementById(id);
+      if (target) target.classList.remove('active');
+    }
+
+    function showToast(msg) {
+      var toast = document.getElementById('toast');
+      if (toast) {
+        toast.innerText = msg;
+        toast.classList.add('show');
+        setTimeout(function() { toast.classList.remove('show'); }, 2500);
+      }
+    }
+
+    function compressImage(file, maxWidth, quality) {
+      return new Promise(function(resolve) {
+        if (!file) return resolve('');
+        maxWidth = maxWidth || 350;
+        quality = quality || 0.55;
+
+        var reader = new FileReader();
+        reader.onerror = function() { resolve(''); };
+        reader.onload = function(e) {
+          var img = new Image();
+          img.onerror = function() { resolve(''); };
+          img.onload = function() {
+            try {
+              var canvas = document.createElement('canvas');
+              var width = img.width;
+              var height = img.height;
+
+              if (width > maxWidth) {
+                height = Math.round((maxWidth / width) * height);
+                width = maxWidth;
+              }
+
+              canvas.width = width;
+              canvas.height = height;
+              var ctx = canvas.getContext('2d');
+              ctx.drawImage(img, 0, 0, width, height);
+              resolve(canvas.toDataURL('image/jpeg', quality));
+            } catch (err) {
+              resolve(e.target.result || '');
+            }
+          };
+          img.src = e.target.result;
+        };
+        reader.readAsDataURL(file);
+      });
+    }
+
+    function countCardsInFolder(folderId) {
+      var count = appData.cards.filter(function(c) { return String(c.folderId) === String(folderId); }).length;
+      var subFolders = appData.folders.filter(function(f) { return String(f.parentId) === String(folderId); });
+      subFolders.forEach(function(sf) { count += countCardsInFolder(sf.id); });
+      return count;
+    }
+
+    function render() {
+      var folderGrid = document.getElementById('folderGrid');
+      var cardGrid = document.getElementById('cardGrid');
+      var backBtn = document.getElementById('backBtn');
+      var addCardBtn = document.getElementById('addCardBtn');
+      var currentPath = document.getElementById('currentPath');
+      var folderSection = document.getElementById('folderSection');
+      var cardSection = document.getElementById('cardSection');
+      var emptyState = document.getElementById('emptyState');
+      var statsBadge = document.getElementById('statsBadge');
+
+      var searchQuery = (document.getElementById('searchInput').value || '').trim().toLowerCase();
+
+      folderGrid.innerHTML = '';
+      cardGrid.innerHTML = '';
+
+      statsBadge.innerText = '共 ' + appData.cards.length + ' 張收藏';
+
+      if (currentFolderId === null) {
+        backBtn.style.display = 'none';
+        addCardBtn.style.display = 'none';
+        currentPath.innerText = '首頁';
+      } else {
+        backBtn.style.display = 'inline-flex';
+        addCardBtn.style.display = 'inline-flex';
+        var currentFolder = appData.folders.find(function(f) { return String(f.id) === String(currentFolderId); });
+        currentPath.innerText = currentFolder ? currentFolder.name : '資料夾';
+      }
+
+      var visibleFolders = appData.folders.filter(function(f) { return String(f.parentId) === String(currentFolderId); });
+      if (searchQuery) {
+        visibleFolders = visibleFolders.filter(function(f) { return f.name.toLowerCase().indexOf(searchQuery) !== -1; });
+      }
+
+      if (visibleFolders.length > 0) {
+        folderSection.style.display = 'block';
+        visibleFolders.forEach(function(folder) {
+          var cardCount = countCardsInFolder(folder.id);
+          var defaultCover = 'https://via.placeholder.com/300x400/EDA0CE/FFFFFF?text=' + encodeURIComponent(folder.name);
+          var item = document.createElement('div');
+          item.className = 'folder-card';
+          item.onclick = function() { openFolder(folder.id); };
+          item.innerHTML = `
+            <div class="folder-actions">
+              <button class="btn-circle" type="button" title="編輯" onclick="event.stopPropagation(); openEditFolderModal('${folder.id}')">✏️</button>
+              <button class="btn-circle" type="button" title="刪除" onclick="event.stopPropagation(); deleteFolder('${folder.id}')">✕</button>
+            </div>
+            <img src="${folder.cover || defaultCover}" alt="${folder.name}">
+            <div class="folder-overlay">
+              <div class="folder-name">${folder.name}</div>
+              <div class="folder-count">${cardCount} 張小卡</div>
+            </div>
+          `;
+          folderGrid.appendChild(item);
+        });
+      } else {
+        folderSection.style.display = 'none';
+      }
+
+      if (currentFolderId !== null) {
+        var visibleCards = appData.cards.filter(function(c) { return String(c.folderId) === String(currentFolderId); });
+        if (searchQuery) {
+          visibleCards = visibleCards.filter(function(c) {
+            return c.name.toLowerCase().indexOf(searchQuery) !== -1 ||
+                   c.category.toLowerCase().indexOf(searchQuery) !== -1 ||
+                   (c.source && c.source.toLowerCase().indexOf(searchQuery) !== -1);
+          });
+        }
+
+        if (visibleCards.length > 0) {
+          cardSection.style.display = 'block';
+          visibleCards.forEach(function(card) {
+            var frontImg = card.imageFront || card.image || '';
+            var hasBack = !!card.imageBack;
+            var item = document.createElement('div');
+            item.className = 'photocard-item';
+            item.onclick = function() { showCardDetail(card.id); };
+            item.innerHTML = `
+              <div class="folder-actions" style="top:8px; right:8px; z-index:5;">
+                <button class="btn-circle" type="button" title="編輯" onclick="event.stopPropagation(); openEditCardModal('${card.id}')">✏️</button>
+                <button class="btn-circle" type="button" title="刪除" onclick="event.stopPropagation(); deleteCard('${card.id}')">✕</button>
+              </div>
+              <img src="${frontImg}" alt="${card.name}">
+              ${hasBack ? '<span class="double-side-badge">🔄 雙面</span>' : ''}
+              <div class="photocard-info">
+                <span class="tag-badge">${card.category}</span>
+                <div class="photocard-title">${card.name}</div>
+                <div class="photocard-meta">
+                  <span>${card.price ? '$'+card.price : ''}</span>
+                  <span>${card.source || ''}</span>
+                </div>
+              </div>
+            `;
+            cardGrid.appendChild(item);
+          });
+        } else {
+          cardSection.style.display = 'none';
+        }
+      } else {
+        cardSection.style.display = 'none';
+      }
+
+      if (visibleFolders.length === 0 && (currentFolderId === null || cardGrid.children.length === 0)) {
+        emptyState.style.display = 'block';
+      } else {
+        emptyState.style.display = 'none';
+      }
+    }
+
+    // 新增資料夾
+    async function addFolder() {
+      var nameInput = document.getElementById('folderName');
+      var fileInput = document.getElementById('folderCover');
+      var btn = document.getElementById('btnCreateFolder');
+
+      var name = (nameInput.value || '').trim();
+      if (!name) return alert('請輸入資料夾名稱！');
+
+      btn.disabled = true;
+      btn.innerText = '建立中...';
+
+      try {
+        var coverBase64 = '';
+        if (fileInput.files && fileInput.files[0]) {
+          coverBase64 = await compressImage(fileInput.files[0], 350, 0.55);
+        }
+
+        var newFolder = {
+          id: Date.now(),
+          parentId: currentFolderId,
+          name: name,
+          cover: coverBase64
+        };
+
+        appData.folders.push(newFolder);
+        saveData();
+        render();
+        closeModal('folderModal');
+
+        nameInput.value = '';
+        fileInput.value = '';
+        showToast('✨ 建立資料夾成功！');
+      } catch (err) {
+        alert('建立失敗，請重試！');
+      } finally {
+        btn.disabled = false;
+        btn.innerText = '建立資料夾';
+      }
+    }
+
+    function openEditFolderModal(id) {
+      var folder = appData.folders.find(function(f) { return String(f.id) === String(id); });
+      if (!folder) return;
+
+      editingFolderId = id;
+      document.getElementById('editFolderName').value = folder.name;
+      document.getElementById('editFolderCover').value = '';
+      openModal('editFolderModal');
+    }
+
+    async function saveEditFolder() {
+      var nameInput = document.getElementById('editFolderName');
+      var fileInput = document.getElementById('editFolderCover');
+      var btn = document.getElementById('btnUpdateFolder');
+
+      var name = (nameInput.value || '').trim();
+      if (!name) return alert('資料夾名稱不能為空！');
+
+      var folderIndex = appData.folders.findIndex(function(f) { return String(f.id) === String(editingFolderId); });
+      if (folderIndex === -1) return;
+
+      btn.disabled = true;
+      btn.innerText = '更新中...';
+
+      try {
+        appData.folders[folderIndex].name = name;
+        if (fileInput.files && fileInput.files[0]) {
+          var newCover = await compressImage(fileInput.files[0], 350, 0.55);
+          appData.folders[folderIndex].cover = newCover;
+        }
+
+        saveData();
+        render();
+        closeModal('editFolderModal');
+        showToast('✏️ 已更新資料夾！');
+      } catch (err) {
+        alert('修改失敗！');
+      } finally {
+        btn.disabled = false;
+        btn.innerText = '儲存修改';
+      }
+    }
+
+    // 新增小卡 (雙照片: 正面 + 背面)
+    async function addCard() {
+      var nameInput = document.getElementById('cardName');
+      var fileInputFront = document.getElementById('cardImageFront');
+      var fileInputBack = document.getElementById('cardImageBack');
+      var btn = document.getElementById('btnCreateCard');
+
+      var name = (nameInput.value || '').trim();
+      var fileFront = fileInputFront.files ? fileInputFront.files[0] : null;
+      var fileBack = fileInputBack.files ? fileInputBack.files[0] : null;
+
+      var selectCat = document.getElementById('cardCategory').value;
+      var customCat = (document.getElementById('customCategory').value || '').trim();
+      var price = document.getElementById('cardPrice').value;
+      var source = (document.getElementById('cardSource').value || '').trim();
+      var note = (document.getElementById('cardNote').value || '').trim();
+
+      if (!name || !fileFront) return alert('請填寫小卡名稱並上傳正面照片 (卡面)！');
+
+      btn.disabled = true;
+      btn.innerText = '儲存中...';
+
+      try {
+        var category = (selectCat === '其他' && customCat) ? customCat : selectCat;
+        var imageFrontBase64 = await compressImage(fileFront, 500, 0.6);
+        var imageBackBase64 = fileBack ? await compressImage(fileBack, 500, 0.6) : '';
+
+        var newCard = {
+          id: Date.now(),
+          folderId: currentFolderId,
+          name: name,
+          category: category,
+          price: price,
+          source: source,
+          note: note,
+          imageFront: imageFrontBase64,
+          imageBack: imageBackBase64,
+          image: imageFrontBase64 // 相容舊版
+        };
+
+        appData.cards.push(newCard);
+        saveData();
+        render();
+        closeModal('cardModal');
+
+        nameInput.value = '';
+        fileInputFront.value = '';
+        fileInputBack.value = '';
+        document.getElementById('cardPrice').value = '';
+        document.getElementById('cardSource').value = '';
+        document.getElementById('cardNote').value = '';
+        showToast('💖 新增小卡成功！');
+      } catch (err) {
+        alert('儲存小卡失敗！');
+      } finally {
+        btn.disabled = false;
+        btn.innerText = '儲存小卡';
+      }
+    }
+
+    // 開啟編輯小卡 Modal
+    function openEditCardModal(id) {
+      var card = appData.cards.find(function(c) { return String(c.id) === String(id); });
+      if (!card) return;
+
+      editingCardId = id;
+      document.getElementById('editCardName').value = card.name || '';
+      document.getElementById('editCardImageFront').value = '';
+      document.getElementById('editCardImageBack').value = '';
+      
+      var selectCat = document.getElementById('editCardCategory');
+      var customCatInput = document.getElementById('editCustomCategory');
+
+      if (['專輯卡', '特典卡', '周邊卡', '快閃店/展覽'].indexOf(card.category) !== -1) {
+        selectCat.value = card.category;
+        customCatInput.style.display = 'none';
+        customCatInput.value = '';
+      } else {
+        selectCat.value = '其他';
+        customCatInput.style.display = 'block';
+        customCatInput.value = card.category || '';
+      }
+
+      document.getElementById('editCardPrice').value = card.price || '';
+      document.getElementById('editCardSource').value = card.source || '';
+      document.getElementById('editCardNote').value = card.note || '';
+
+      openModal('editCardModal');
+    }
+
+    // 儲存修改小卡
+    async function saveEditCard() {
+      var cardIndex = appData.cards.findIndex(function(c) { return String(c.id) === String(editingCardId); });
+      if (cardIndex === -1) return;
+
+      var nameInput = document.getElementById('editCardName');
+      var fileFront = document.getElementById('editCardImageFront').files[0];
+      var fileBack = document.getElementById('editCardImageBack').files[0];
+      var btn = document.getElementById('btnUpdateCard');
+
+      var name = (nameInput.value || '').trim();
+      if (!name) return alert('小卡名稱不能為空！');
+
+      btn.disabled = true;
+      btn.innerText = '更新中...';
+
+      try {
+        var selectCat = document.getElementById('editCardCategory').value;
+        var customCat = (document.getElementById('editCustomCategory').value || '').trim();
+        var category = (selectCat === '其他' && customCat) ? customCat : selectCat;
+
+        appData.cards[cardIndex].name = name;
+        appData.cards[cardIndex].category = category;
+        appData.cards[cardIndex].price = document.getElementById('editCardPrice').value;
+        appData.cards[cardIndex].source = (document.getElementById('editCardSource').value || '').trim();
+        appData.cards[cardIndex].note = (document.getElementById('editCardNote').value || '').trim();
+
+        if (fileFront) {
+          var newFront = await compressImage(fileFront, 500, 0.6);
+          appData.cards[cardIndex].imageFront = newFront;
+          appData.cards[cardIndex].image = newFront;
+        }
+
+        if (fileBack) {
+          var newBack = await compressImage(fileBack, 500, 0.6);
+          appData.cards[cardIndex].imageBack = newBack;
+        }
+
+        saveData();
+        render();
+        closeModal('editCardModal');
+        closeModal('detailModal');
+        showToast('✏️ 已更新小卡資料！');
+      } catch(err) {
+        alert('修改失敗，請重試！');
+      } finally {
+        btn.disabled = false;
+        btn.innerText = '儲存修改';
+      }
+    }
+
+    // 從詳情 Modal 直接觸發編輯
+    function triggerEditFromDetail() {
+      if (currentDetailCard) {
+        openEditCardModal(currentDetailCard.id);
+      }
+    }
+
+    // 查看小卡詳情 (支援正面/背面圖片切換)
+    function showCardDetail(id) {
+      var card = appData.cards.find(function(c) { return String(c.id) === String(id); });
+      if (!card) return;
+
+      currentDetailCard = card;
+      document.getElementById('detailTitle').innerText = card.name;
+      document.getElementById('detailCategory').innerText = card.category;
+      document.getElementById('detailPrice').innerText = card.price ? '$' + card.price + ' NTD' : '未填寫';
+      document.getElementById('detailSource').innerText = card.source || '未填寫';
+      document.getElementById('detailNote').innerText = card.note || '無備註';
+
+      var toggleContainer = document.getElementById('photoToggleContainer');
+      if (card.imageBack) {
+        toggleContainer.style.display = 'flex';
+      } else {
+        toggleContainer.style.display = 'none';
+      }
+
+      switchDetailPhoto('front');
+      openModal('detailModal');
+    }
+
+    // 切換詳情視窗內的正面/背面照片
+    function switchDetailPhoto(side) {
+      if (!currentDetailCard) return;
+      var imgEl = document.getElementById('detailImage');
+      var btnFront = document.getElementById('btnTabFront');
+      var btnBack = document.getElementById('btnTabBack');
+
+      var frontSrc = currentDetailCard.imageFront || currentDetailCard.image;
+      var backSrc = currentDetailCard.imageBack;
+
+      if (side === 'back' && backSrc) {
+        imgEl.src = backSrc;
+        btnFront.classList.remove('active');
+        btnBack.classList.add('active');
+      } else {
+        imgEl.src = frontSrc;
+        btnFront.classList.add('active');
+        btnBack.classList.remove('active');
+      }
+    }
+
+    function deleteFolder(id) {
+      if (confirm('確定要刪除這個資料夾（包含裡面的所有小卡）嗎？')) {
+        var deleteFolderRecursive = function(fId) {
+          var subFolders = appData.folders.filter(function(f) { return String(f.parentId) === String(fId); });
+          subFolders.forEach(function(sf) { deleteFolderRecursive(sf.id); });
+          appData.folders = appData.folders.filter(function(f) { return String(f.id) !== String(fId); });
+          appData.cards = appData.cards.filter(function(c) { return String(c.folderId) !== String(fId); });
+        };
+
+        deleteFolderRecursive(id);
+        saveData();
+        render();
+        showToast('已刪除資料夾');
+      }
+    }
+
+    function deleteCard(id) {
+      if (confirm('確定要刪除這張小卡紀錄嗎？')) {
+        appData.cards = appData.cards.filter(function(c) { return String(c.id) !== String(id); });
+        saveData();
+        render();
+        showToast('已刪除小卡');
+      }
+    }
+
+    function openFolder(id) {
+      folderStack.push(currentFolderId);
+      currentFolderId = id;
+      document.getElementById('searchInput').value = '';
+      render();
+    }
+
+    function goBack() {
+      if (folderStack.length > 0) {
+        currentFolderId = folderStack.pop();
+        document.getElementById('searchInput').value = '';
+        render();
+      }
+    }
+
+    function handleSearch() { render(); }
+
+    function toggleCustomCategory(select) {
+      document.getElementById('customCategory').style.display = (select.value === '其他') ? 'block' : 'none';
+    }
+
+    function toggleCustomCategoryEdit(select) {
+      document.getElementById('editCustomCategory').style.display = (select.value === '其他') ? 'block' : 'none';
+    }
+
+    function exportData() {
+      var dataStr = JSON.stringify(appData, null, 2);
+      var blob = new Blob([dataStr], { type: 'application/json' });
+      var url = URL.createObjectURL(blob);
+      var a = document.createElement('a');
+      a.href = url;
+      a.download = 'photocard_backup_' + new Date().toISOString().slice(0, 10) + '.json';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      showToast('備份檔已成功下載！');
+    }
+
+    function importData(event) {
+      var file = event.target.files ? event.target.files[0] : null;
+      if (!file) return;
+
+      var reader = new FileReader();
+      reader.onload = function(e) {
+        try {
+          var imported = JSON.parse(e.target.result);
+          if (imported && Array.isArray(imported.folders) && Array.isArray(imported.cards)) {
+            appData = imported;
+            saveData();
+            render();
+            closeModal('backupModal');
+            alert('🎉 資料還原成功！');
+          } else {
+            alert('❌ 備份檔格式不正確！');
+          }
+        } catch (err) {
+          alert('❌ 讀取檔案失敗！');
+        }
+      };
+      reader.readAsText(file);
+    }
+
+    window.onload = function() {
+      initStorage().then(function() {
+        render();
+      });
+    };
+  </script>
+</body>
+</html>
