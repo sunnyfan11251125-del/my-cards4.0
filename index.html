@@ -23,9 +23,8 @@
         canvas.height = 180;
         var ctx = canvas.getContext('2d');
 
-        // 1. 粉色底色 #EDA0CE (圓角矩形)
         ctx.fillStyle = '#EDA0CE';
-        ctx.beginPath();
+        canvas.beginPath();
         var r = 36;
         ctx.moveTo(r, 0);
         ctx.lineTo(180 - r, 0);
@@ -39,24 +38,20 @@
         ctx.closePath();
         ctx.fill();
 
-        // 2. 繪製精緻白色蝴蝶結 🎀
         ctx.fillStyle = '#FFFFFF';
         
-        // 左翅膀
         ctx.beginPath();
         ctx.moveTo(90, 90);
         ctx.bezierCurveTo(60, 50, 30, 60, 40, 85);
         ctx.bezierCurveTo(45, 100, 70, 95, 90, 90);
         ctx.fill();
 
-        // 右翅膀
         ctx.beginPath();
         ctx.moveTo(90, 90);
         ctx.bezierCurveTo(120, 50, 150, 60, 140, 85);
         ctx.bezierCurveTo(135, 100, 110, 95, 90, 90);
         ctx.fill();
 
-        // 飄帶
         ctx.beginPath();
         ctx.moveTo(85, 92);
         ctx.lineTo(55, 135);
@@ -71,7 +66,6 @@
         ctx.lineTo(92, 98);
         ctx.fill();
 
-        // 中間結
         ctx.beginPath();
         ctx.arc(90, 90, 11, 0, Math.PI * 2);
         ctx.fill();
@@ -594,21 +588,6 @@
       flex-direction: column;
       gap: 8px;
     }
-
-    .trade-photo-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 6px;
-      margin-top: 4px;
-    }
-
-    .trade-photo-grid img {
-      width: 100%;
-      aspect-ratio: 1;
-      object-fit: cover;
-      border-radius: 8px;
-      border: 1px solid #E2E8F0;
-    }
   </style>
 </head>
 <body>
@@ -747,6 +726,7 @@
         <input type="number" id="cardPrice" placeholder="例如：350">
       </div>
 
+      <!-- 預購欄位 (僅在預購區時顯示) -->
       <div id="preorderOnlyFields" style="display:none; border-top:1px dashed #E2E8F0; padding-top:10px; margin-top:10px;">
         <div class="form-group">
           <label>購入管道</label>
@@ -782,6 +762,7 @@
         </div>
       </div>
 
+      <!-- 待售欄位 (僅在勾選「待售」時跳出) -->
       <div id="saleOnlyFields" style="display:none; border-top:1px dashed #E2E8F0; padding-top:10px; margin-top:10px;">
         <div class="form-group">
           <label>賣出管道</label>
@@ -901,6 +882,7 @@
         <div>🏷️ <strong>分類：</strong> <span id="detailCategory"></span></div>
         <div>💰 <strong>入手價格：</strong> <span id="detailPrice"></span></div>
         <div>🛒 <strong>管道 / 買賣家：</strong> <span id="detailSource"></span></div>
+        <div id="detailShipRow" style="display:none;">📦 <strong>寄件方式：</strong> <span id="detailShipMethod"></span></div>
         <div>📝 <strong>備註：</strong> <span id="detailNote" style="white-space:pre-line; color:#555;"></span></div>
       </div>
 
@@ -945,7 +927,6 @@
     </div>
   </div>
 
-  <!-- 排序 Modal (修正選單簡體箭頭亂碼) -->
   <div class="modal" id="filterModal">
     <div class="modal-content">
       <div class="modal-header">
@@ -1351,7 +1332,6 @@
 
       var visibleCards = [];
       if (searchQuery) {
-        // 全局模糊搜尋：加入「備註 (note)」為可搜尋關鍵字
         visibleCards = appData.cards.filter(function(c) {
           if (c.status !== targetStatus) return false;
           return (c.name || '').toLowerCase().indexOf(searchQuery) !== -1 ||
@@ -1713,6 +1693,15 @@
       document.getElementById('detailSource').innerText = sourceSummary;
       document.getElementById('detailNote').innerText = card.note || '無備註';
 
+      // 預購小卡顯示寄件方式
+      var shipRow = document.getElementById('detailShipRow');
+      if (card.status === 'shipping' && card.shipMethod) {
+        shipRow.style.display = 'block';
+        document.getElementById('detailShipMethod').innerText = card.shipMethod;
+      } else {
+        shipRow.style.display = 'none';
+      }
+
       var btnTransfer = document.getElementById('btnTransferSpot');
       btnTransfer.style.display = card.status === 'shipping' ? 'inline-flex' : 'none';
 
@@ -1851,7 +1840,7 @@
       }
 
       var csvRows = [];
-      csvRows.push(['小卡名稱', '分類', '狀態', '待售標記', '入手價格(NTD)', '購入管道', '賣家ID', '備註']);
+      csvRows.push(['小卡名稱', '分類', '狀態', '待售標記', '入手價格(NTD)', '購入管道', '賣家ID', '寄件方式', '備註']);
 
       appData.cards.forEach(function(card) {
         var row = [
@@ -1862,6 +1851,7 @@
           card.price || 0,
           '"' + (card.buyChannel || card.source || '').replace(/"/g, '""') + '"',
           '"' + (card.sellerId || '').replace(/"/g, '""') + '"',
+          '"' + (card.shipMethod || '').replace(/"/g, '""') + '"',
           '"' + (card.note || '').replace(/"/g, '""') + '"'
         ];
         csvRows.push(row.join(','));
