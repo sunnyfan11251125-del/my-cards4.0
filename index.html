@@ -14,7 +14,7 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
   <meta name="apple-mobile-web-app-title" content="小卡收藏">
 
-  <!-- 即時繪製 iPhone 專用 PNG 高畫質圖示 -->
+  <!-- 即時繪製 iPhone 專用 PNG 高畫質圖示 (修復 iOS 無法讀取 SVG Logo 問題) -->
   <script>
     (function generatePNGIcon() {
       try {
@@ -23,8 +23,9 @@
         canvas.height = 180;
         var ctx = canvas.getContext('2d');
 
+        // 1. 粉色底色 #EDA0CE (圓角矩形)
         ctx.fillStyle = '#EDA0CE';
-        canvas.beginPath();
+        ctx.beginPath();
         var r = 36;
         ctx.moveTo(r, 0);
         ctx.lineTo(180 - r, 0);
@@ -38,20 +39,24 @@
         ctx.closePath();
         ctx.fill();
 
+        // 2. 繪製精緻白色蝴蝶結 🎀
         ctx.fillStyle = '#FFFFFF';
         
+        // 左翅膀
         ctx.beginPath();
         ctx.moveTo(90, 90);
         ctx.bezierCurveTo(60, 50, 30, 60, 40, 85);
         ctx.bezierCurveTo(45, 100, 70, 95, 90, 90);
         ctx.fill();
 
+        // 右翅膀
         ctx.beginPath();
         ctx.moveTo(90, 90);
         ctx.bezierCurveTo(120, 50, 150, 60, 140, 85);
         ctx.bezierCurveTo(135, 100, 110, 95, 90, 90);
         ctx.fill();
 
+        // 飄帶
         ctx.beginPath();
         ctx.moveTo(85, 92);
         ctx.lineTo(55, 135);
@@ -66,18 +71,25 @@
         ctx.lineTo(92, 98);
         ctx.fill();
 
+        // 中間結
         ctx.beginPath();
         ctx.arc(90, 90, 11, 0, Math.PI * 2);
         ctx.fill();
 
         var pngDataUrl = canvas.toDataURL('image/png');
         
-        window.addEventListener('DOMContentLoaded', function() {
+        var setIcon = function() {
           var appleIcon = document.getElementById('appleTouchIcon');
           var favIcon = document.getElementById('faviconPng');
           if (appleIcon) appleIcon.href = pngDataUrl;
           if (favIcon) favIcon.href = pngDataUrl;
-        });
+        };
+
+        if (document.readyState === 'loading') {
+          window.addEventListener('DOMContentLoaded', setIcon);
+        } else {
+          setIcon();
+        }
       } catch(e) {}
     })();
   </script>
@@ -726,7 +738,6 @@
         <input type="number" id="cardPrice" placeholder="例如：350">
       </div>
 
-      <!-- 預購欄位 (僅在預購區時顯示) -->
       <div id="preorderOnlyFields" style="display:none; border-top:1px dashed #E2E8F0; padding-top:10px; margin-top:10px;">
         <div class="form-group">
           <label>購入管道</label>
@@ -762,7 +773,6 @@
         </div>
       </div>
 
-      <!-- 待售欄位 (僅在勾選「待售」時跳出) -->
       <div id="saleOnlyFields" style="display:none; border-top:1px dashed #E2E8F0; padding-top:10px; margin-top:10px;">
         <div class="form-group">
           <label>賣出管道</label>
@@ -1693,7 +1703,7 @@
       document.getElementById('detailSource').innerText = sourceSummary;
       document.getElementById('detailNote').innerText = card.note || '無備註';
 
-      // 預購小卡顯示寄件方式
+      // 預購小卡顯示寄件/取貨方式
       var shipRow = document.getElementById('detailShipRow');
       if (card.status === 'shipping' && card.shipMethod) {
         shipRow.style.display = 'block';
