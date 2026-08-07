@@ -5,14 +5,88 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>小卡收藏</title>
 
-  <!-- iOS 獨立 App 設定 -->
+  <!-- iPhone / iPad 專屬 PNG 桌面圖示 (粉紅底 + 白色蝴蝶結 🎀) -->
+  <link rel="apple-touch-icon" sizes="180x180" id="appleTouchIcon" href="">
+  <link rel="icon" type="image/png" sizes="192x192" id="faviconPng" href="">
+
+  <!-- iOS PWA 獨立 App 設定 -->
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
   <meta name="apple-mobile-web-app-title" content="小卡收藏">
 
-  <!-- iPhone / iPad 專屬桌面圖示 (粉紅底 + 白色蝴蝶結 🎀) -->
-  <link rel="apple-touch-icon" href="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180' viewBox='0 0 180 180'><rect width='180' height='180' rx='36' fill='%23EDA0CE'/><path d='M90 90 C60 50 30 60 40 85 C45 100 70 95 90 90 Z' fill='%23FFFFFF'/><path d='M90 90 C120 50 150 60 140 85 C135 100 110 95 90 90 Z' fill='%23FFFFFF'/><path d='M85 92 L55 135 L70 135 L88 98 Z' fill='%23FFFFFF'/><path d='M95 92 L125 135 L110 135 L92 98 Z' fill='%23FFFFFF'/><circle cx='90' cy='90' r='11' fill='%23FFFFFF'/></svg>">
-  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180' viewBox='0 0 180 180'><rect width='180' height='180' rx='36' fill='%23EDA0CE'/><path d='M90 90 C60 50 30 60 40 85 C45 100 70 95 90 90 Z' fill='%23FFFFFF'/><path d='M90 90 C120 50 150 60 140 85 C135 100 110 95 90 90 Z' fill='%23FFFFFF'/><path d='M85 92 L55 135 L70 135 L88 98 Z' fill='%23FFFFFF'/><path d='M95 92 L125 135 L110 135 L92 98 Z' fill='%23FFFFFF'/><circle cx='90' cy='90' r='11' fill='%23FFFFFF'/></svg>">
+  <!-- 即時繪製 iPhone 專用 PNG 高畫質圖示 -->
+  <script>
+    (function generatePNGIcon() {
+      try {
+        var canvas = document.createElement('canvas');
+        canvas.width = 180;
+        canvas.height = 180;
+        var ctx = canvas.getContext('2d');
+
+        // 1. 粉色底色 #EDA0CE (圓角矩形)
+        ctx.fillStyle = '#EDA0CE';
+        ctx.beginPath();
+        var r = 36;
+        ctx.moveTo(r, 0);
+        ctx.lineTo(180 - r, 0);
+        ctx.quadraticCurveTo(180, 0, 180, r);
+        ctx.lineTo(180, 180 - r);
+        ctx.quadraticCurveTo(180, 180, 180 - r, 180);
+        ctx.lineTo(r, 180);
+        ctx.quadraticCurveTo(0, 180, 0, 180 - r);
+        ctx.lineTo(0, r);
+        ctx.quadraticCurveTo(0, 0, r, 0);
+        ctx.closePath();
+        ctx.fill();
+
+        // 2. 繪製精緻白色蝴蝶結 🎀
+        ctx.fillStyle = '#FFFFFF';
+        
+        // 左翅膀
+        ctx.beginPath();
+        ctx.moveTo(90, 90);
+        ctx.bezierCurveTo(60, 50, 30, 60, 40, 85);
+        ctx.bezierCurveTo(45, 100, 70, 95, 90, 90);
+        ctx.fill();
+
+        // 右翅膀
+        ctx.beginPath();
+        ctx.moveTo(90, 90);
+        ctx.bezierCurveTo(120, 50, 150, 60, 140, 85);
+        ctx.bezierCurveTo(135, 100, 110, 95, 90, 90);
+        ctx.fill();
+
+        // 飄帶
+        ctx.beginPath();
+        ctx.moveTo(85, 92);
+        ctx.lineTo(55, 135);
+        ctx.lineTo(70, 135);
+        ctx.lineTo(88, 98);
+        ctx.fill();
+
+        ctx.beginPath();
+        ctx.moveTo(95, 92);
+        ctx.lineTo(125, 135);
+        ctx.lineTo(110, 135);
+        ctx.lineTo(92, 98);
+        ctx.fill();
+
+        // 中間結
+        ctx.beginPath();
+        ctx.arc(90, 90, 11, 0, Math.PI * 2);
+        ctx.fill();
+
+        var pngDataUrl = canvas.toDataURL('image/png');
+        
+        window.addEventListener('DOMContentLoaded', function() {
+          var appleIcon = document.getElementById('appleTouchIcon');
+          var favIcon = document.getElementById('faviconPng');
+          if (appleIcon) appleIcon.href = pngDataUrl;
+          if (favIcon) favIcon.href = pngDataUrl;
+        });
+      } catch(e) {}
+    })();
+  </script>
 
   <style>
     :root {
@@ -627,7 +701,6 @@
     </div>
   </div>
 
-  <!-- 新增小卡 Modal (動態展開待售/預購欄位) -->
   <div class="modal" id="cardModal">
     <div class="modal-content">
       <div class="modal-header">
@@ -674,7 +747,6 @@
         <input type="number" id="cardPrice" placeholder="例如：350">
       </div>
 
-      <!-- 預購欄位 (僅在預購區時顯示) -->
       <div id="preorderOnlyFields" style="display:none; border-top:1px dashed #E2E8F0; padding-top:10px; margin-top:10px;">
         <div class="form-group">
           <label>購入管道</label>
@@ -710,7 +782,6 @@
         </div>
       </div>
 
-      <!-- 買家欄位 (僅在勾選「待售」時跳出) -->
       <div id="saleOnlyFields" style="display:none; border-top:1px dashed #E2E8F0; padding-top:10px; margin-top:10px;">
         <div class="form-group">
           <label>賣出管道</label>
@@ -749,7 +820,6 @@
     </div>
   </div>
 
-  <!-- 編輯小卡 Modal -->
   <div class="modal" id="editCardModal">
     <div class="modal-content">
       <div class="modal-header">
@@ -796,7 +866,6 @@
         <input type="number" id="editCardPrice">
       </div>
 
-      <!-- 買家編輯欄位 (僅在勾選「待售」時跳出) -->
       <div id="editSaleOnlyFields" style="display:none; border-top:1px dashed #E2E8F0; padding-top:10px; margin-top:10px;">
         <div class="form-group">
           <label>買家 ID / 帳號</label>
@@ -876,6 +945,7 @@
     </div>
   </div>
 
+  <!-- 排序 Modal (修正選單簡體箭頭亂碼) -->
   <div class="modal" id="filterModal">
     <div class="modal-content">
       <div class="modal-header">
@@ -885,10 +955,10 @@
       <div class="form-group">
         <label>排序方式</label>
         <select id="filterSort">
-          <option value="newest">建立時間：最新 $\rightarrow$ 最舊</option>
-          <option value="oldest">建立時間：最舊 $\rightarrow$ 最新</option>
-          <option value="priceHigh">價格：高 $\rightarrow$ 低</option>
-          <option value="priceLow">價格：低 $\rightarrow$ 高</option>
+          <option value="newest">建立時間：最新 → 最舊</option>
+          <option value="oldest">建立時間：最舊 → 最新</option>
+          <option value="priceHigh">價格：高 → 低</option>
+          <option value="priceLow">價格：低 → 高</option>
         </select>
       </div>
       <button class="btn" type="button" style="width:100%; padding:11px;" onclick="applyFilter()">套用排序</button>
