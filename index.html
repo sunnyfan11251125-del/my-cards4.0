@@ -23,7 +23,6 @@
         canvas.height = 180;
         var ctx = canvas.getContext('2d');
 
-        // 1. 粉色底色 #EDA0CE (圓角矩形)
         ctx.fillStyle = '#EDA0CE';
         ctx.beginPath();
         var r = 36;
@@ -39,24 +38,19 @@
         ctx.closePath();
         ctx.fill();
 
-        // 2. 繪製精緻白色蝴蝶結 🎀
         ctx.fillStyle = '#FFFFFF';
-        
-        // 左翅膀
         ctx.beginPath();
         ctx.moveTo(90, 90);
         ctx.bezierCurveTo(60, 50, 30, 60, 40, 85);
         ctx.bezierCurveTo(45, 100, 70, 95, 90, 90);
         ctx.fill();
 
-        // 右翅膀
         ctx.beginPath();
         ctx.moveTo(90, 90);
         ctx.bezierCurveTo(120, 50, 150, 60, 140, 85);
         ctx.bezierCurveTo(135, 100, 110, 95, 90, 90);
         ctx.fill();
 
-        // 飄帶
         ctx.beginPath();
         ctx.moveTo(85, 92);
         ctx.lineTo(55, 135);
@@ -71,13 +65,11 @@
         ctx.lineTo(92, 98);
         ctx.fill();
 
-        // 中間結
         ctx.beginPath();
         ctx.arc(90, 90, 11, 0, Math.PI * 2);
         ctx.fill();
 
         var pngDataUrl = canvas.toDataURL('image/png');
-        
         window.addEventListener('DOMContentLoaded', function() {
           var appleIcon = document.getElementById('appleTouchIcon');
           var favIcon = document.getElementById('faviconPng');
@@ -107,7 +99,6 @@
       margin: 0;
       padding: 0;
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-      -webkit-tap-highlight-color: transparent;
     }
 
     body {
@@ -143,16 +134,7 @@
     .header-right {
       display: flex;
       align-items: center;
-      gap: 8px;
-    }
-
-    .status-badge {
-      font-size: 0.72rem;
-      background: var(--primary-light);
-      color: var(--primary-dark);
-      padding: 4px 10px;
-      border-radius: 12px;
-      font-weight: 700;
+      gap: 6px;
     }
 
     /* 導航列與搜尋 */
@@ -181,18 +163,21 @@
     }
 
     .search-box {
+      display: flex;
+      gap: 8px;
       width: 100%;
-      position: relative;
     }
 
     .search-box input {
-      width: 100%;
+      flex: 1;
       padding: 9px 14px 9px 36px;
       border-radius: 20px;
       border: 1px solid #E2E8F0;
       background: #F7FAFC;
       font-size: 0.88rem;
       outline: none;
+      -webkit-user-select: text;
+      user-select: text;
     }
 
     .search-box input:focus {
@@ -219,17 +204,16 @@
       background: var(--primary);
       color: white;
       border: none;
-      padding: 9px 15px;
+      padding: 9px 14px;
       border-radius: 20px;
       font-weight: 700;
-      font-size: 0.85rem;
+      font-size: 0.82rem;
       cursor: pointer;
       display: inline-flex;
       align-items: center;
       justify-content: center;
       gap: 4px;
       box-shadow: 0 2px 8px rgba(237, 160, 206, 0.45);
-      touch-action: manipulation;
     }
 
     .btn:active {
@@ -259,6 +243,9 @@
       font-weight: 700;
       color: var(--text-muted);
       letter-spacing: 0.5px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
     }
 
     /* 資料夾網格 */
@@ -330,7 +317,6 @@
       justify-content: center;
       font-size: 0.8rem;
       cursor: pointer;
-      backdrop-filter: blur(4px);
     }
 
     /* 小卡網格 */
@@ -386,7 +372,6 @@
       color: white;
       padding: 2px 6px;
       border-radius: 8px;
-      backdrop-filter: blur(4px);
     }
 
     .photocard-title {
@@ -432,16 +417,16 @@
       border-color: var(--primary);
     }
 
-    /* Modal 彈出視窗 */
+    /* Modal 樣式 */
     .modal {
       display: none;
       position: fixed;
       inset: 0;
-      background: rgba(0, 0, 0, 0.55);
+      background: rgba(0, 0, 0, 0.6);
       z-index: 200;
-      backdrop-filter: blur(4px);
       justify-content: center;
       align-items: flex-end;
+      overflow-y: auto;
     }
 
     .modal.active {
@@ -452,16 +437,12 @@
       background: white;
       width: 100%;
       max-width: 500px;
-      padding: 22px;
+      padding: 22px 22px 30px;
       border-radius: 20px 20px 0 0;
-      max-height: 85vh;
+      max-height: 90vh;
       overflow-y: auto;
-      animation: slideUp 0.25s ease-out;
-    }
-
-    @keyframes slideUp {
-      from { transform: translateY(100%); }
-      to { transform: translateY(0); }
+      -webkit-overflow-scrolling: touch;
+      margin-top: auto;
     }
 
     .modal-header {
@@ -489,19 +470,25 @@
       color: var(--text-muted);
     }
 
-    .form-group input, .form-group select, .form-group textarea {
+    .form-group input, 
+    .form-group select, 
+    .form-group textarea {
       width: 100%;
-      padding: 10px 12px;
+      padding: 12px;
       border: 1px solid #E2E8F0;
       border-radius: var(--radius-md);
-      font-size: 0.88rem;
+      font-size: 16px !important;
       outline: none;
       background: #F8FAFC;
+      color: var(--text-main);
+      -webkit-user-select: text !important;
+      user-select: text !important;
+      touch-action: auto !important;
     }
 
     .form-group textarea {
       resize: vertical;
-      height: 65px;
+      height: 70px;
     }
 
     .empty-state {
@@ -528,22 +515,70 @@
       font-size: 0.82rem;
       z-index: 300;
       transition: transform 0.3s ease;
-      backdrop-filter: blur(4px);
     }
 
     .toast.show {
       transform: translateX(-50%) translateY(0);
     }
+
+    .stat-card {
+      background: var(--primary-light);
+      padding: 14px;
+      border-radius: 12px;
+      margin-bottom: 10px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .stat-title {
+      font-size: 0.82rem;
+      color: var(--primary-dark);
+      font-weight: 700;
+    }
+
+    .stat-val {
+      font-size: 1.1rem;
+      font-weight: 800;
+      color: var(--primary-dark);
+    }
+
+    /* 交易卡片條 */
+    .trade-card {
+      background: #F8FAFC;
+      padding: 12px;
+      border-radius: 12px;
+      border: 1px solid #E2E8F0;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .trade-photo-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 6px;
+      margin-top: 4px;
+    }
+
+    .trade-photo-grid img {
+      width: 100%;
+      aspect-ratio: 1;
+      object-fit: cover;
+      border-radius: 8px;
+      border: 1px solid #E2E8F0;
+    }
   </style>
 </head>
 <body>
 
-  <!-- 頂部 Header -->
+  <!-- 頂部 Header (乾淨極簡) -->
   <header>
     <h1>💖 小卡收藏</h1>
     <div class="header-right">
-      <div class="status-badge" id="statsBadge">共 0 張收藏</div>
-      <button class="btn-icon" onclick="openModal('backupModal')">⚙️ 備份</button>
+      <button class="btn-icon" onclick="openModal('preorderModal')">📦 預購區</button>
+      <button class="btn-icon" onclick="openModal('saleModal')">🛍️ 待售區</button>
+      <button class="btn-icon" onclick="openModal('backupModal')">⚙️ 設定</button>
     </div>
   </header>
 
@@ -561,8 +596,11 @@
     </div>
 
     <div class="search-box">
-      <span class="search-icon">🔍</span>
-      <input type="text" id="searchInput" placeholder="搜尋小卡名稱、分類或管道..." oninput="handleSearch()">
+      <div style="position:relative; flex:1;">
+        <span class="search-icon">🔍</span>
+        <input type="text" id="searchInput" placeholder="搜尋現有小卡、分類或管道..." oninput="render()">
+      </div>
+      <button class="btn-icon" onclick="openModal('filterModal')">⚙️ 排序</button>
     </div>
   </div>
 
@@ -572,9 +610,12 @@
     <div class="folder-grid" id="folderGrid"></div>
   </div>
 
-  <!-- 小卡展示區 -->
+  <!-- 現有小卡展示區 (乾淨主頁) -->
   <div id="cardSection" style="display:none;">
-    <div class="section-title">小卡收藏</div>
+    <div class="section-title">
+      <span>現有小卡</span>
+      <span id="cardCountBadge" style="font-size:0.75rem; color:var(--text-muted);"></span>
+    </div>
     <div class="card-grid" id="cardGrid"></div>
   </div>
 
@@ -622,13 +663,22 @@
     </div>
   </div>
 
-  <!-- 新增小卡 Modal (雙照片支援) -->
+  <!-- 新增小卡 Modal (動態欄位) -->
   <div class="modal" id="cardModal">
     <div class="modal-content">
       <div class="modal-header">
         <h3>新增小卡紀錄</h3>
         <span style="cursor:pointer; font-size:1.2rem;" onclick="closeModal('cardModal')">✕</span>
       </div>
+      <div class="form-group">
+        <label>小卡歸屬類別</label>
+        <select id="cardStatus" onchange="toggleCardStatusFields('add')">
+          <option value="acquired">🟢 現有小卡 (展示於主頁)</option>
+          <option value="shipping">🟡 預購/路上中 (收納於預購區)</option>
+          <option value="forsale">🔴 待售/可換 (收納於待售區)</option>
+        </select>
+      </div>
+
       <div class="form-group">
         <label>小卡名稱 / 版本</label>
         <input type="text" id="cardName" placeholder="例如：Exist 專輯通路特典 卡面A">
@@ -656,12 +706,80 @@
         <label>入手價格 ($ NTD)</label>
         <input type="number" id="cardPrice" placeholder="例如：350">
       </div>
-      <div class="form-group">
-        <label>入手管道</label>
-        <input type="text" id="cardSource" placeholder="例如：Soundwave / 社團拆售">
+
+      <!-- 預購延伸動態欄位 (賣家與寄件) -->
+      <div id="addPreorderFields" style="display:none; border-top:1px dashed #E2E8F0; padding-top:10px; margin-top:10px;">
+        <div class="form-group">
+          <label>購入管道</label>
+          <select id="addBuyChannel" onchange="toggleOtherInput(this, 'addBuyChannelOther')">
+            <option value="Threads">Threads</option>
+            <option value="IG">IG</option>
+            <option value="FB 社團">FB 社團</option>
+            <option value="Koca">Koca</option>
+            <option value="LINE 社群">LINE 社群</option>
+            <option value="其他">其他</option>
+          </select>
+          <input type="text" id="addBuyChannelOther" placeholder="請輸入購入管道名稱" style="display:none; margin-top:8px;">
+        </div>
+        <div class="form-group">
+          <label>賣家 ID / 帳號</label>
+          <input type="text" id="addSellerId" placeholder="例如：@seller_id">
+        </div>
+        <div class="form-group">
+          <label>寄件 / 取貨方式</label>
+          <select id="addShipMethod" onchange="toggleOtherInput(this, 'addShipMethodOther')">
+            <option value="7-11 賣貨便">7-11 賣貨便</option>
+            <option value="全家好賣+">全家好賣+</option>
+            <option value="萊爾富">萊爾富</option>
+            <option value="郵寄/宅配">郵寄/宅配</option>
+            <option value="面交">面交</option>
+            <option value="其他">其他</option>
+          </select>
+          <input type="text" id="addShipMethodOther" placeholder="請輸入寄件方式" style="display:none; margin-top:8px;">
+        </div>
+        <div class="form-group">
+          <label>交易照片紀錄 (對話/匯款單，最多 3 張)</label>
+          <input type="file" id="addPreorderPhotos" accept="image/*" multiple>
+        </div>
       </div>
+
+      <!-- 待售延伸動態欄位 (買家與寄件) -->
+      <div id="addSaleFields" style="display:none; border-top:1px dashed #E2E8F0; padding-top:10px; margin-top:10px;">
+        <div class="form-group">
+          <label>賣出管道</label>
+          <select id="addSellChannel" onchange="toggleOtherInput(this, 'addSellChannelOther')">
+            <option value="Threads">Threads</option>
+            <option value="IG">IG</option>
+            <option value="FB 社團">FB 社團</option>
+            <option value="Koca">Koca</option>
+            <option value="LINE 社群">LINE 社群</option>
+            <option value="其他">其他</option>
+          </select>
+          <input type="text" id="addSellChannelOther" placeholder="請輸入賣出管道名稱" style="display:none; margin-top:8px;">
+        </div>
+        <div class="form-group">
+          <label>買家 ID / 帳號</label>
+          <input type="text" id="addBuyerId" placeholder="例如：小明 / @buyer_id">
+        </div>
+        <div class="form-group">
+          <label>寄件方式</label>
+          <select id="addSellShipMethod" onchange="toggleOtherInput(this, 'addSellShipMethodOther')">
+            <option value="7-11 賣貨便">7-11 賣貨便</option>
+            <option value="全家好賣+">全家好賣+</option>
+            <option value="郵寄/宅配">郵寄/宅配</option>
+            <option value="面交">面交</option>
+            <option value="其他">其他</option>
+          </select>
+          <input type="text" id="addSellShipMethodOther" placeholder="請輸入寄件方式" style="display:none; margin-top:8px;">
+        </div>
+        <div class="form-group">
+          <label>交易照片紀錄 (寄件單/對話，最多 3 張)</label>
+          <input type="file" id="addSalePhotos" accept="image/*" multiple>
+        </div>
+      </div>
+
       <div class="form-group">
-        <label>備註 (卡況、交換意願等)</label>
+        <label>備註</label>
         <textarea id="cardNote" placeholder="例如：無瑕拆封、可換同款燦烈"></textarea>
       </div>
       <button class="btn" type="button" id="btnCreateCard" style="width:100%; padding:12px; margin-top:8px;" onclick="addCard()">儲存小卡</button>
@@ -674,6 +792,14 @@
       <div class="modal-header">
         <h3>✏️ 編輯小卡資料</h3>
         <span style="cursor:pointer; font-size:1.2rem;" onclick="closeModal('editCardModal')">✕</span>
+      </div>
+      <div class="form-group">
+        <label>小卡歸屬類別</label>
+        <select id="editCardStatus" onchange="toggleCardStatusFields('edit')">
+          <option value="acquired">🟢 現有小卡 (展示於主頁)</option>
+          <option value="shipping">🟡 預購/路上中 (收納於預購區)</option>
+          <option value="forsale">🔴 待售/可換 (收納於待售區)</option>
+        </select>
       </div>
       <div class="form-group">
         <label>小卡名稱 / 版本</label>
@@ -702,10 +828,78 @@
         <label>入手價格 ($ NTD)</label>
         <input type="number" id="editCardPrice">
       </div>
-      <div class="form-group">
-        <label>入手管道</label>
-        <input type="text" id="editCardSource">
+
+      <!-- 預購延伸動態欄位 (編輯) -->
+      <div id="editPreorderFields" style="display:none; border-top:1px dashed #E2E8F0; padding-top:10px; margin-top:10px;">
+        <div class="form-group">
+          <label>購入管道</label>
+          <select id="editBuyChannel" onchange="toggleOtherInput(this, 'editBuyChannelOther')">
+            <option value="Threads">Threads</option>
+            <option value="IG">IG</option>
+            <option value="FB 社團">FB 社團</option>
+            <option value="Koca">Koca</option>
+            <option value="LINE 社群">LINE 社群</option>
+            <option value="其他">其他</option>
+          </select>
+          <input type="text" id="editBuyChannelOther" placeholder="請輸入購入管道名稱" style="display:none; margin-top:8px;">
+        </div>
+        <div class="form-group">
+          <label>賣家 ID / 帳號</label>
+          <input type="text" id="editSellerId">
+        </div>
+        <div class="form-group">
+          <label>寄件 / 取貨方式</label>
+          <select id="editShipMethod" onchange="toggleOtherInput(this, 'editShipMethodOther')">
+            <option value="7-11 賣貨便">7-11 賣貨便</option>
+            <option value="全家好賣+">全家好賣+</option>
+            <option value="萊爾富">萊爾富</option>
+            <option value="郵寄/宅配">郵寄/宅配</option>
+            <option value="面交">面交</option>
+            <option value="其他">其他</option>
+          </select>
+          <input type="text" id="editShipMethodOther" placeholder="請輸入寄件方式" style="display:none; margin-top:8px;">
+        </div>
+        <div class="form-group">
+          <label>補充/更換交易照片 (最多 3 張，不選則保留原圖)</label>
+          <input type="file" id="editPreorderPhotos" accept="image/*" multiple>
+        </div>
       </div>
+
+      <!-- 待售延伸動態欄位 (編輯) -->
+      <div id="editSaleFields" style="display:none; border-top:1px dashed #E2E8F0; padding-top:10px; margin-top:10px;">
+        <div class="form-group">
+          <label>賣出管道</label>
+          <select id="editSellChannel" onchange="toggleOtherInput(this, 'editSellChannelOther')">
+            <option value="Threads">Threads</option>
+            <option value="IG">IG</option>
+            <option value="FB 社團">FB 社團</option>
+            <option value="Koca">Koca</option>
+            <option value="LINE 社群">LINE 社群</option>
+            <option value="其他">其他</option>
+          </select>
+          <input type="text" id="editSellChannelOther" placeholder="請輸入賣出管道名稱" style="display:none; margin-top:8px;">
+        </div>
+        <div class="form-group">
+          <label>買家 ID / 帳號</label>
+          <input type="text" id="editBuyerId">
+        </div>
+        <div class="form-group">
+          <label>寄件方式</label>
+          <select id="editSellShipMethod" onchange="toggleOtherInput(this, 'editSellShipMethodOther')">
+            <option value="7-11 賣貨便">7-11 賣貨便</option>
+            <option value="全家好賣+">全家好賣+</option>
+            <option value="郵寄/宅配">郵寄/宅配</option>
+            <option value="面交">面交</option>
+            <option value="其他">其他</option>
+          </select>
+          <input type="text" id="editSellShipMethodOther" placeholder="請輸入寄件方式" style="display:none; margin-top:8px;">
+        </div>
+        <div class="form-group">
+          <label>補充/更換交易照片 (最多 3 張，不選則保留原圖)</label>
+          <input type="file" id="editSalePhotos" accept="image/*" multiple>
+        </div>
+      </div>
+
       <div class="form-group">
         <label>備註</label>
         <textarea id="editCardNote"></textarea>
@@ -714,7 +908,7 @@
     </div>
   </div>
 
-  <!-- 查看小卡詳情 Modal (支援正面/背面切換) -->
+  <!-- 查看小卡詳情 Modal -->
   <div class="modal" id="detailModal">
     <div class="modal-content">
       <div class="modal-header">
@@ -722,7 +916,6 @@
         <span style="cursor:pointer; font-size:1.2rem;" onclick="closeModal('detailModal')">✕</span>
       </div>
 
-      <!-- 切換正面/背面圖片頁籤 -->
       <div class="photo-toggle-tabs" id="photoToggleContainer" style="display:none;">
         <button class="toggle-tab-btn active" id="btnTabFront" onclick="switchDetailPhoto('front')">🌸 卡面 (正面)</button>
         <button class="toggle-tab-btn" id="btnTabBack" onclick="switchDetailPhoto('back')">🌸 卡背 (背面)</button>
@@ -735,8 +928,8 @@
       <div style="display:flex; flex-direction:column; gap:8px; font-size:0.88rem;">
         <div>🏷️ <strong>分類：</strong> <span id="detailCategory"></span></div>
         <div>💰 <strong>入手價格：</strong> <span id="detailPrice"></span></div>
-        <div>🛒 <strong>入手管道：</strong> <span id="detailSource"></span></div>
-        <div>📝 <strong>備註：</strong> <span id="detailNote" style="white-space:pre-line; color:#555;"></span></div>
+        <div>🛒 <strong>管道/備註：</strong> <span id="detailSource"></span></div>
+        <div>📝 <strong>詳細備註：</strong> <span id="detailNote" style="white-space:pre-line; color:#555;"></span></div>
       </div>
 
       <div style="display:flex; gap:8px; margin-top:16px;">
@@ -746,33 +939,107 @@
     </div>
   </div>
 
-  <!-- 備份與還原 Modal -->
+  <!-- 📦 專屬預購/路上區 Modal -->
+  <div class="modal" id="preorderModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>📦 預購 / 路上中小卡</h3>
+        <span style="cursor:pointer; font-size:1.2rem;" onclick="closeModal('preorderModal')">✕</span>
+      </div>
+      <p style="font-size:0.8rem; color:var(--text-muted); margin-bottom:12px;">
+        點擊「✨ 轉為現貨」，小卡就會漂亮地歸檔並顯示於主頁小卡冊中！
+      </p>
+      <div id="preorderCardList" style="display:flex; flex-direction:column; gap:12px; max-height:60vh; overflow-y:auto;"></div>
+      <button class="btn btn-secondary" type="button" style="width:100%; padding:10px; margin-top:14px;" onclick="closeModal('preorderModal')">關閉</button>
+    </div>
+  </div>
+
+  <!-- 🛍️ 專屬待售區 Modal -->
+  <div class="modal" id="saleModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>🛍️ 待售 / 可換小卡區</h3>
+        <span style="cursor:pointer; font-size:1.2rem;" onclick="closeModal('saleModal')">✕</span>
+      </div>
+      <p style="font-size:0.8rem; color:var(--text-muted); margin-bottom:12px;">
+        點擊「📋 複製至週邊們」即可複製格式，方便一鍵貼入週邊 App 記帳！
+      </p>
+      <div id="saleCardList" style="display:flex; flex-direction:column; gap:12px; max-height:60vh; overflow-y:auto;"></div>
+      <button class="btn btn-secondary" type="button" style="width:100%; padding:10px; margin-top:14px;" onclick="closeModal('saleModal')">關閉</button>
+    </div>
+  </div>
+
+  <!-- 排序 Modal -->
+  <div class="modal" id="filterModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>⚙️ 小卡排序條件</h3>
+        <span style="cursor:pointer; font-size:1.2rem;" onclick="closeModal('filterModal')">✕</span>
+      </div>
+      <div class="form-group">
+        <label>排序方式</label>
+        <select id="filterSort">
+          <option value="newest">建立時間：最新 $\rightarrow$ 最舊</option>
+          <option value="oldest">建立時間：最舊 $\rightarrow$ 最新</option>
+          <option value="priceHigh">價格：高 $\rightarrow$ 低</option>
+          <option value="priceLow">價格：低 $\rightarrow$ 高</option>
+        </select>
+      </div>
+      <button class="btn" type="button" style="width:100%; padding:11px;" onclick="applyFilter()">套用排序</button>
+    </div>
+  </div>
+
+  <!-- 📊 統計 Modal -->
+  <div class="modal" id="statsModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>📊 收藏數據統計</h3>
+        <span style="cursor:pointer; font-size:1.2rem;" onclick="closeModal('statsModal')">✕</span>
+      </div>
+      <div class="stat-card">
+        <span class="stat-title">現有小卡總數</span>
+        <span class="stat-val" id="statTotalCards">0 張</span>
+      </div>
+      <div class="stat-card">
+        <span class="stat-title">預購 / 路上中小卡</span>
+        <span class="stat-val" id="statShippingCards">0 張</span>
+      </div>
+      <div class="stat-card">
+        <span class="stat-title">小卡總投資金額</span>
+        <span class="stat-val" id="statTotalCost">$ 0 NTD</span>
+      </div>
+      <div class="stat-card">
+        <span class="stat-title">平均單張小卡價格</span>
+        <span class="stat-val" id="statAvgPrice">$ 0 NTD</span>
+      </div>
+      <button class="btn btn-secondary" type="button" style="width:100%; padding:10px; margin-top:10px;" onclick="closeModal('statsModal')">關閉</button>
+    </div>
+  </div>
+
+  <!-- 備份與設定 Modal -->
   <div class="modal" id="backupModal">
     <div class="modal-content">
       <div class="modal-header">
-        <h3>⚙️ 資料備份與設定</h3>
+        <h3>⚙️ 設定與資料匯出</h3>
         <span style="cursor:pointer; font-size:1.2rem;" onclick="closeModal('backupModal')">✕</span>
       </div>
-      <p style="font-size:0.8rem; color:var(--text-muted); margin-bottom:14px;">
-        資料已使用手機 IndexedDB 高容量資料庫永久儲存。您也可以匯出 JSON 備份檔保存。
-      </p>
-
       <div style="display:flex; flex-direction:column; gap:10px;">
-        <button class="btn" type="button" style="width:100%; padding:11px;" onclick="exportData()">📥 匯出資料備份 (.json)</button>
+        <button class="btn" type="button" style="width:100%; padding:11px;" onclick="openModal('statsModal')">📊 查看收藏數據統計</button>
+        <button class="btn" type="button" style="width:100%; padding:11px;" onclick="exportExcel()">📊 匯出小卡清單 Excel (.csv)</button>
+        <button class="btn btn-secondary" type="button" style="width:100%; padding:11px;" onclick="exportData()">📥 匯出完整 JSON 備份檔</button>
         <div style="border-top:1px dashed #E2E8F0; margin:4px 0;"></div>
         <div class="form-group">
-          <label>📤 匯入還原資料文件</label>
+          <label>📤 匯入還原資料文件 (.json)</label>
           <input type="file" id="importFileInput" accept=".json" onchange="importData(event)">
         </div>
       </div>
-
       <button class="btn btn-secondary" type="button" style="width:100%; padding:9px; margin-top:10px;" onclick="closeModal('backupModal')">關閉</button>
     </div>
   </div>
 
   <div class="toast" id="toast">已更新資料</div>
 
-  <!-- 核心高容量 IndexedDB 本機持久化邏輯 -->
+  <!-- 核心邏輯腳本 -->
   <script>
     var DB_NAME = 'PhotocardApp_DB';
     var DB_VERSION = 1;
@@ -784,6 +1051,8 @@
     var editingFolderId = null;
     var editingCardId = null;
     var currentDetailCard = null;
+
+    var activeSort = 'newest';
 
     function initStorage() {
       return new Promise(function(resolve) {
@@ -825,6 +1094,7 @@
           req.onsuccess = function() {
             if (req.result && req.result.data) {
               appData = req.result.data;
+              sanitizeCardsData();
             } else {
               loadFromFallback();
             }
@@ -844,7 +1114,19 @@
     function loadFromFallback() {
       var ls = localStorage.getItem('photocard_backup_ls');
       if (ls) {
-        try { appData = JSON.parse(ls); } catch(e){}
+        try { 
+          appData = JSON.parse(ls); 
+          sanitizeCardsData();
+        } catch(e){}
+      }
+    }
+
+    function sanitizeCardsData() {
+      if (appData && Array.isArray(appData.cards)) {
+        appData.cards.forEach(function(c) {
+          if (!c.status) c.status = 'acquired';
+          if (!c.tradePhotos) c.tradePhotos = [];
+        });
       }
     }
 
@@ -865,7 +1147,17 @@
 
     function openModal(id) {
       var target = document.getElementById(id);
-      if (target) target.classList.add('active');
+      if (target) {
+        target.classList.add('active');
+        if (id === 'cardModal') toggleCardStatusFields('add');
+        if (id === 'preorderModal') renderPreorderList();
+        if (id === 'saleModal') renderSaleList();
+        if (id === 'statsModal') calculateStats();
+        var firstInput = target.querySelector('input[type="text"]');
+        if (firstInput) {
+          setTimeout(function() { firstInput.focus(); }, 200);
+        }
+      }
     }
 
     function closeModal(id) {
@@ -919,8 +1211,38 @@
       });
     }
 
+    // 批量壓縮最多 3 張圖片
+    async function compressMultipleImages(fileList) {
+      var results = [];
+      if (!fileList || fileList.length === 0) return results;
+      var count = Math.min(fileList.length, 3);
+      for (var i = 0; i < count; i++) {
+        var base64 = await compressImage(fileList[i], 400, 0.55);
+        if (base64) results.push(base64);
+      }
+      return results;
+    }
+
+    function toggleCardStatusFields(prefix) {
+      var status = document.getElementById(prefix === 'add' ? 'cardStatus' : 'editCardStatus').value;
+      var preorderDiv = document.getElementById(prefix === 'add' ? 'addPreorderFields' : 'editPreorderFields');
+      var saleDiv = document.getElementById(prefix === 'add' ? 'addSaleFields' : 'editSaleFields');
+
+      preorderDiv.style.display = (status === 'shipping') ? 'block' : 'none';
+      saleDiv.style.display = (status === 'forsale') ? 'block' : 'none';
+    }
+
+    function toggleOtherInput(selectEl, inputId) {
+      var otherInput = document.getElementById(inputId);
+      if (otherInput) {
+        otherInput.style.display = (selectEl.value === '其他') ? 'block' : 'none';
+      }
+    }
+
     function countCardsInFolder(folderId) {
-      var count = appData.cards.filter(function(c) { return String(c.folderId) === String(folderId); }).length;
+      var count = appData.cards.filter(function(c) { 
+        return String(c.folderId) === String(folderId) && c.status === 'acquired'; 
+      }).length;
       var subFolders = appData.folders.filter(function(f) { return String(f.parentId) === String(folderId); });
       subFolders.forEach(function(sf) { count += countCardsInFolder(sf.id); });
       return count;
@@ -935,14 +1257,11 @@
       var folderSection = document.getElementById('folderSection');
       var cardSection = document.getElementById('cardSection');
       var emptyState = document.getElementById('emptyState');
-      var statsBadge = document.getElementById('statsBadge');
 
       var searchQuery = (document.getElementById('searchInput').value || '').trim().toLowerCase();
 
       folderGrid.innerHTML = '';
       cardGrid.innerHTML = '';
-
-      statsBadge.innerText = '共 ' + appData.cards.length + ' 張收藏';
 
       if (currentFolderId === null) {
         backBtn.style.display = 'none';
@@ -986,7 +1305,10 @@
       }
 
       if (currentFolderId !== null) {
-        var visibleCards = appData.cards.filter(function(c) { return String(c.folderId) === String(currentFolderId); });
+        var visibleCards = appData.cards.filter(function(c) { 
+          return String(c.folderId) === String(currentFolderId) && c.status === 'acquired'; 
+        });
+
         if (searchQuery) {
           visibleCards = visibleCards.filter(function(c) {
             return c.name.toLowerCase().indexOf(searchQuery) !== -1 ||
@@ -995,11 +1317,22 @@
           });
         }
 
+        visibleCards.sort(function(a, b) {
+          if (activeSort === 'newest') return b.id - a.id;
+          if (activeSort === 'oldest') return a.id - b.id;
+          if (activeSort === 'priceHigh') return (Number(b.price)||0) - (Number(a.price)||0);
+          if (activeSort === 'priceLow') return (Number(a.price)||0) - (Number(b.price)||0);
+          return 0;
+        });
+
+        document.getElementById('cardCountBadge').innerText = '(' + visibleCards.length + ' 張)';
+
         if (visibleCards.length > 0) {
           cardSection.style.display = 'block';
           visibleCards.forEach(function(card) {
             var frontImg = card.imageFront || card.image || '';
             var hasBack = !!card.imageBack;
+
             var item = document.createElement('div');
             item.className = 'photocard-item';
             item.onclick = function() { showCardDetail(card.id); };
@@ -1035,7 +1368,6 @@
       }
     }
 
-    // 新增資料夾
     async function addFolder() {
       var nameInput = document.getElementById('folderName');
       var fileInput = document.getElementById('folderCover');
@@ -1119,7 +1451,6 @@
       }
     }
 
-    // 新增小卡 (雙照片: 正面 + 背面)
     async function addCard() {
       var nameInput = document.getElementById('cardName');
       var fileInputFront = document.getElementById('cardImageFront');
@@ -1130,25 +1461,51 @@
       var fileFront = fileInputFront.files ? fileInputFront.files[0] : null;
       var fileBack = fileInputBack.files ? fileInputBack.files[0] : null;
 
+      var status = document.getElementById('cardStatus').value;
       var selectCat = document.getElementById('cardCategory').value;
       var customCat = (document.getElementById('customCategory').value || '').trim();
       var price = document.getElementById('cardPrice').value;
       var source = (document.getElementById('cardSource').value || '').trim();
       var note = (document.getElementById('cardNote').value || '').trim();
 
-      if (!name || !fileFront) return alert('請填寫小卡名稱並上傳正面照片 (卡面)！');
+      if (!name) return alert('請填寫小卡名稱！');
 
       btn.disabled = true;
       btn.innerText = '儲存中...';
 
       try {
         var category = (selectCat === '其他' && customCat) ? customCat : selectCat;
-        var imageFrontBase64 = await compressImage(fileFront, 500, 0.6);
+        var imageFrontBase64 = fileFront ? await compressImage(fileFront, 500, 0.6) : '';
         var imageBackBase64 = fileBack ? await compressImage(fileBack, 500, 0.6) : '';
+
+        // 預購管道處理
+        var buyChannel = document.getElementById('addBuyChannel').value;
+        if (buyChannel === '其他') buyChannel = (document.getElementById('addBuyChannelOther').value || '').trim() || '其他';
+        var sellerId = (document.getElementById('addSellerId').value || '').trim();
+
+        var shipMethod = document.getElementById('addShipMethod').value;
+        if (shipMethod === '其他') shipMethod = (document.getElementById('addShipMethodOther').value || '').trim() || '其他';
+
+        var preorderPhotoFiles = document.getElementById('addPreorderPhotos').files;
+        var preorderPhotos = await compressMultipleImages(preorderPhotoFiles);
+
+        // 待售管道處理
+        var sellChannel = document.getElementById('addSellChannel').value;
+        if (sellChannel === '其他') sellChannel = (document.getElementById('addSellChannelOther').value || '').trim() || '其他';
+        var buyerId = (document.getElementById('addBuyerId').value || '').trim();
+
+        var sellShipMethod = document.getElementById('addSellShipMethod').value;
+        if (sellShipMethod === '其他') sellShipMethod = (document.getElementById('addSellShipMethodOther').value || '').trim() || '其他';
+
+        var salePhotoFiles = document.getElementById('addSalePhotos').files;
+        var salePhotos = await compressMultipleImages(salePhotoFiles);
+
+        var tradePhotosArr = status === 'shipping' ? preorderPhotos : (status === 'forsale' ? salePhotos : []);
 
         var newCard = {
           id: Date.now(),
           folderId: currentFolderId,
+          status: status,
           name: name,
           category: category,
           price: price,
@@ -1156,7 +1513,14 @@
           note: note,
           imageFront: imageFrontBase64,
           imageBack: imageBackBase64,
-          image: imageFrontBase64 // 相容舊版
+          image: imageFrontBase64,
+          buyChannel: buyChannel,
+          sellerId: sellerId,
+          shipMethod: shipMethod,
+          sellChannel: sellChannel,
+          buyerId: buyerId,
+          sellShipMethod: sellShipMethod,
+          tradePhotos: tradePhotosArr
         };
 
         appData.cards.push(newCard);
@@ -1179,16 +1543,20 @@
       }
     }
 
-    // 開啟編輯小卡 Modal
     function openEditCardModal(id) {
       var card = appData.cards.find(function(c) { return String(c.id) === String(id); });
       if (!card) return;
 
       editingCardId = id;
-      document.getElementById('editCardName').value = card.name || '';
+      document.getElementById('editCardStatus').value = card.status || 'acquired';
+      toggleCardStatusFields('edit');
+
+      var editNameInput = document.getElementById('editCardName');
+      editNameInput.value = card.name || '';
+      
       document.getElementById('editCardImageFront').value = '';
       document.getElementById('editCardImageBack').value = '';
-      
+
       var selectCat = document.getElementById('editCardCategory');
       var customCatInput = document.getElementById('editCustomCategory');
 
@@ -1203,13 +1571,17 @@
       }
 
       document.getElementById('editCardPrice').value = card.price || '';
-      document.getElementById('editCardSource').value = card.source || '';
       document.getElementById('editCardNote').value = card.note || '';
+
+      // 載入預購延伸資料
+      document.getElementById('editSellerId').value = card.sellerId || '';
+
+      // 載入待售延伸資料
+      document.getElementById('editBuyerId').value = card.buyerId || '';
 
       openModal('editCardModal');
     }
 
-    // 儲存修改小卡
     async function saveEditCard() {
       var cardIndex = appData.cards.findIndex(function(c) { return String(c.id) === String(editingCardId); });
       if (cardIndex === -1) return;
@@ -1226,14 +1598,15 @@
       btn.innerText = '更新中...';
 
       try {
+        var status = document.getElementById('editCardStatus').value;
         var selectCat = document.getElementById('editCardCategory').value;
         var customCat = (document.getElementById('editCustomCategory').value || '').trim();
         var category = (selectCat === '其他' && customCat) ? customCat : selectCat;
 
+        appData.cards[cardIndex].status = status;
         appData.cards[cardIndex].name = name;
         appData.cards[cardIndex].category = category;
         appData.cards[cardIndex].price = document.getElementById('editCardPrice').value;
-        appData.cards[cardIndex].source = (document.getElementById('editCardSource').value || '').trim();
         appData.cards[cardIndex].note = (document.getElementById('editCardNote').value || '').trim();
 
         if (fileFront) {
@@ -1247,11 +1620,41 @@
           appData.cards[cardIndex].imageBack = newBack;
         }
 
+        // 更新預購欄位
+        if (status === 'shipping') {
+          var buyChannel = document.getElementById('editBuyChannel').value;
+          if (buyChannel === '其他') buyChannel = (document.getElementById('editBuyChannelOther').value || '').trim() || '其他';
+          appData.cards[cardIndex].buyChannel = buyChannel;
+          appData.cards[cardIndex].sellerId = (document.getElementById('editSellerId').value || '').trim();
+
+          var shipMethod = document.getElementById('editShipMethod').value;
+          if (shipMethod === '其他') shipMethod = (document.getElementById('editShipMethodOther').value || '').trim() || '其他';
+          appData.cards[cardIndex].shipMethod = shipMethod;
+
+          var newPrePhotos = await compressMultipleImages(document.getElementById('editPreorderPhotos').files);
+          if (newPrePhotos.length > 0) appData.cards[cardIndex].tradePhotos = newPrePhotos;
+        }
+
+        // 更新待售欄位
+        if (status === 'forsale') {
+          var sellChannel = document.getElementById('editSellChannel').value;
+          if (sellChannel === '其他') sellChannel = (document.getElementById('editSellChannelOther').value || '').trim() || '其他';
+          appData.cards[cardIndex].sellChannel = sellChannel;
+          appData.cards[cardIndex].buyerId = (document.getElementById('editBuyerId').value || '').trim();
+
+          var sellShipMethod = document.getElementById('editSellShipMethod').value;
+          if (sellShipMethod === '其他') sellShipMethod = (document.getElementById('editSellShipMethodOther').value || '').trim() || '其他';
+          appData.cards[cardIndex].sellShipMethod = sellShipMethod;
+
+          var newSalePhotos = await compressMultipleImages(document.getElementById('editSalePhotos').files);
+          if (newSalePhotos.length > 0) appData.cards[cardIndex].tradePhotos = newSalePhotos;
+        }
+
         saveData();
         render();
         closeModal('editCardModal');
         closeModal('detailModal');
-        showToast('✏️ 已更新小卡資料！');
+        showToast('✏️ 已成功更新小卡！');
       } catch(err) {
         alert('修改失敗，請重試！');
       } finally {
@@ -1260,14 +1663,14 @@
       }
     }
 
-    // 從詳情 Modal 直接觸發編輯
     function triggerEditFromDetail() {
       if (currentDetailCard) {
-        openEditCardModal(currentDetailCard.id);
+        var targetId = currentDetailCard.id;
+        closeModal('detailModal');
+        setTimeout(function() { openEditCardModal(targetId); }, 150);
       }
     }
 
-    // 查看小卡詳情 (支援正面/背面圖片切換)
     function showCardDetail(id) {
       var card = appData.cards.find(function(c) { return String(c.id) === String(id); });
       if (!card) return;
@@ -1276,21 +1679,18 @@
       document.getElementById('detailTitle').innerText = card.name;
       document.getElementById('detailCategory').innerText = card.category;
       document.getElementById('detailPrice').innerText = card.price ? '$' + card.price + ' NTD' : '未填寫';
-      document.getElementById('detailSource').innerText = card.source || '未填寫';
+      
+      var sourceSummary = card.source || (card.buyChannel ? card.buyChannel + ' ' + (card.sellerId||'') : '未填寫');
+      document.getElementById('detailSource').innerText = sourceSummary;
       document.getElementById('detailNote').innerText = card.note || '無備註';
 
       var toggleContainer = document.getElementById('photoToggleContainer');
-      if (card.imageBack) {
-        toggleContainer.style.display = 'flex';
-      } else {
-        toggleContainer.style.display = 'none';
-      }
+      toggleContainer.style.display = card.imageBack ? 'flex' : 'none';
 
       switchDetailPhoto('front');
       openModal('detailModal');
     }
 
-    // 切換詳情視窗內的正面/背面照片
     function switchDetailPhoto(side) {
       if (!currentDetailCard) return;
       var imgEl = document.getElementById('detailImage');
@@ -1309,6 +1709,187 @@
         btnFront.classList.add('active');
         btnBack.classList.remove('active');
       }
+    }
+
+    // 渲染預購區 Modal (支援交易照片與詳細賣家資訊)
+    function renderPreorderList() {
+      var listEl = document.getElementById('preorderCardList');
+      listEl.innerHTML = '';
+
+      var preorderCards = appData.cards.filter(function(c) { return c.status === 'shipping'; });
+      if (preorderCards.length === 0) {
+        listEl.innerHTML = '<p style="text-align:center; color:#888; padding:20px;">目前沒有預購或路上中的小卡喔！</p>';
+        return;
+      }
+
+      preorderCards.forEach(function(card) {
+        var photosHtml = '';
+        if (card.tradePhotos && card.tradePhotos.length > 0) {
+          photosHtml = '<div class="trade-photo-grid">' + card.tradePhotos.map(function(p) {
+            return `<img src="${p}" alt="交易證明">`;
+          }).join('') + '</div>';
+        }
+
+        var item = document.createElement('div');
+        item.className = 'trade-card';
+        item.innerHTML = `
+          <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+            <div>
+              <div style="font-weight:700; font-size:0.9rem; color:#2D3748;">${card.name}</div>
+              <div style="font-size:0.75rem; color:#718096; margin-top:2px;">
+                ${card.buyChannel ? '🛒 '+card.buyChannel : ''} ${card.sellerId ? '('+card.sellerId+')' : ''}
+                ${card.shipMethod ? ' | 📦 '+card.shipMethod : ''}
+              </div>
+              <div style="font-size:0.75rem; color:var(--primary-dark); font-weight:700; margin-top:2px;">
+                ${card.price ? '$'+card.price+' NTD' : ''}
+              </div>
+            </div>
+            <button class="btn" style="font-size:0.72rem; padding:6px 10px; background:#137333;" onclick="markCardAcquired('${card.id}')">✨ 轉為現貨</button>
+          </div>
+          ${photosHtml}
+        `;
+        listEl.appendChild(item);
+      });
+    }
+
+    function markCardAcquired(cardId) {
+      var cardIndex = appData.cards.findIndex(function(c) { return String(c.id) === String(cardId); });
+      if (cardIndex !== -1) {
+        appData.cards[cardIndex].status = 'acquired';
+        saveData();
+        render();
+        renderPreorderList();
+        showToast('🎉 已轉為現貨並顯示於主頁！');
+      }
+    }
+
+    // 渲染待售區 Modal (支援「小卡」字樣複製格式)
+    function renderSaleList() {
+      var listEl = document.getElementById('saleCardList');
+      listEl.innerHTML = '';
+
+      var saleCards = appData.cards.filter(function(c) { return c.status === 'forsale'; });
+      if (saleCards.length === 0) {
+        listEl.innerHTML = '<p style="text-align:center; color:#888; padding:20px;">目前沒有待售或可換的小卡喔！</p>';
+        return;
+      }
+
+      saleCards.forEach(function(card) {
+        var photosHtml = '';
+        if (card.tradePhotos && card.tradePhotos.length > 0) {
+          photosHtml = '<div class="trade-photo-grid">' + card.tradePhotos.map(function(p) {
+            return `<img src="${p}" alt="交易證明">`;
+          }).join('') + '</div>';
+        }
+
+        var item = document.createElement('div');
+        item.className = 'trade-card';
+        item.innerHTML = `
+          <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+            <div>
+              <div style="font-weight:700; font-size:0.9rem; color:#2D3748;">${card.name}</div>
+              <div style="font-size:0.75rem; color:#718096; margin-top:2px;">
+                ${card.sellChannel ? '🏪 '+card.sellChannel : ''} ${card.buyerId ? '(買家: '+card.buyerId+')' : ''}
+                ${card.sellShipMethod ? ' | 📦 '+card.sellShipMethod : ''}
+              </div>
+              <div style="font-size:0.75rem; color:var(--primary-dark); font-weight:700; margin-top:2px;">
+                ${card.price ? '$'+card.price+' NTD' : ''}
+              </div>
+            </div>
+            <button class="btn btn-secondary" style="font-size:0.72rem; padding:6px 10px;" onclick="copyToGoodsApp('${card.name}', '${card.price}', '${card.buyerId}', '${card.sellShipMethod}')">📋 複製至週邊們</button>
+          </div>
+          ${photosHtml}
+        `;
+        listEl.appendChild(item);
+      });
+    }
+
+    // 複製為「週邊們」格式：小卡 都敬秀 Exist 特典 $350 (買家: 小明 / 7-11 賣貨便)
+    function copyToGoodsApp(name, price, buyerId, shipMethod) {
+      var extraInfo = [];
+      if (buyerId) extraInfo.push('買家: ' + buyerId);
+      if (shipMethod) extraInfo.push(shipMethod);
+
+      var extraStr = extraInfo.length > 0 ? ' (' + extraInfo.join(' / ') + ')' : '';
+      var text = '小卡 ' + name + (price ? ' $' + price : '') + extraStr;
+
+      navigator.clipboard.writeText(text).then(function() {
+        showToast('📋 已複製格式至剪貼簿！');
+      }).catch(function() {
+        showToast('複製失敗，請手動複製！');
+      });
+    }
+
+    function applyFilter() {
+      activeSort = document.getElementById('filterSort').value;
+      closeModal('filterModal');
+      render();
+      showToast('已套用排序設定');
+    }
+
+    function calculateStats() {
+      var acquiredCards = appData.cards.filter(function(c) { return c.status === 'acquired'; }).length;
+      var shippingCards = appData.cards.filter(function(c) { return c.status === 'shipping'; }).length;
+      var totalCost = 0;
+      var pricedCardsCount = 0;
+
+      appData.cards.forEach(function(c) {
+        if (c.price) {
+          var p = Number(c.price);
+          if (!isNaN(p)) {
+            totalCost += p;
+            pricedCardsCount++;
+          }
+        }
+      });
+
+      var avgPrice = pricedCardsCount > 0 ? Math.round(totalCost / pricedCardsCount) : 0;
+
+      document.getElementById('statTotalCards').innerText = acquiredCards + ' 張';
+      document.getElementById('statShippingCards').innerText = shippingCards + ' 張';
+      document.getElementById('statTotalCost').innerText = '$ ' + totalCost.toLocaleString() + ' NTD';
+      document.getElementById('statAvgPrice').innerText = '$ ' + avgPrice.toLocaleString() + ' NTD';
+    }
+
+    function exportExcel() {
+      if (!appData.cards || appData.cards.length === 0) {
+        return alert('目前沒有任何小卡紀錄可供匯出！');
+      }
+
+      var csvRows = [];
+      csvRows.push(['小卡名稱', '分類', '歸屬類別', '入手價格(NTD)', '購入/賣出管道', '賣家/買家ID', '寄件方式', '備註']);
+
+      var statusTextMap = { acquired: '現有現貨', shipping: '預購/路上', forsale: '待售/可換' };
+
+      appData.cards.forEach(function(card) {
+        var channel = card.status === 'shipping' ? (card.buyChannel||'') : (card.status === 'forsale' ? (card.sellChannel||'') : (card.source||''));
+        var person = card.status === 'shipping' ? (card.sellerId||'') : (card.status === 'forsale' ? (card.buyerId||'') : '');
+        var ship = card.status === 'shipping' ? (card.shipMethod||'') : (card.status === 'forsale' ? (card.sellShipMethod||'') : '');
+
+        var row = [
+          '"' + (card.name || '').replace(/"/g, '""') + '"',
+          '"' + (card.category || '').replace(/"/g, '""') + '"',
+          '"' + (statusTextMap[card.status] || '現有現貨') + '"',
+          card.price || 0,
+          '"' + channel.replace(/"/g, '""') + '"',
+          '"' + person.replace(/"/g, '""') + '"',
+          '"' + ship.replace(/"/g, '""') + '"',
+          '"' + (card.note || '').replace(/"/g, '""') + '"'
+        ];
+        csvRows.push(row.join(','));
+      });
+
+      var csvString = '\uFEFF' + csvRows.join('\n');
+      var blob = new Blob([csvString], { type: 'text/csv;charset=utf-8;' });
+      var url = URL.createObjectURL(blob);
+      var a = document.createElement('a');
+      a.href = url;
+      a.download = '小卡收藏清單_' + new Date().toISOString().slice(0, 10) + '.csv';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      showToast('📊 Excel (.csv) 已下載！');
     }
 
     function deleteFolder(id) {
@@ -1351,8 +1932,6 @@
       }
     }
 
-    function handleSearch() { render(); }
-
     function toggleCustomCategory(select) {
       document.getElementById('customCategory').style.display = (select.value === '其他') ? 'block' : 'none';
     }
@@ -1385,6 +1964,7 @@
           var imported = JSON.parse(e.target.result);
           if (imported && Array.isArray(imported.folders) && Array.isArray(imported.cards)) {
             appData = imported;
+            sanitizeCardsData();
             saveData();
             render();
             closeModal('backupModal');
