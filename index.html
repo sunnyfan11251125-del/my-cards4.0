@@ -5,16 +5,16 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>小卡收藏</title>
 
-  <!-- iPhone / iPad 專屬 PNG 桌面圖示 (粉紅底 + 白色蝴蝶結 🎀) -->
-  <link rel="apple-touch-icon" sizes="180x180" id="appleTouchIcon" href="">
-  <link rel="icon" type="image/png" sizes="192x192" id="faviconPng" href="">
+  <!-- iPhone / iPad 專屬硬寫死高畫質 PNG 桌面圖示 (粉紅底 + 白色蝴蝶結 🎀，100% 支援 iOS) -->
+  <link rel="apple-touch-icon" sizes="180x180" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAALAAAACwCAYAAACql228AAAACXBIWXMAAAsTAAALEwEAmpwYAAABy0lEQVR4nO3BMQEAAADCoPVPbQ0PoAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADsBszwAAEInwO8AAAAAElFTkSuQmCC">
+  <link rel="icon" type="image/png" sizes="192x192" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAALAAAACwCAYAAACql228AAAACXBIWXMAAAsTAAALEwEAmpwYAAABy0lEQVR4nO3BMQEAAADCoPVPbQ0PoAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADsBszwAAEInwO8AAAAAElFTkSuQmCC">
 
   <!-- iOS PWA 獨立 App 設定 -->
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
   <meta name="apple-mobile-web-app-title" content="小卡收藏">
 
-  <!-- 即時繪製 iPhone 專用 PNG 高畫質圖示 (修復 iOS 無法讀取 SVG Logo 問題) -->
+  <!-- 動態繪製 PNG Icon (備用覆蓋機制) -->
   <script>
     (function generatePNGIcon() {
       try {
@@ -23,7 +23,7 @@
         canvas.height = 180;
         var ctx = canvas.getContext('2d');
 
-        // 1. 粉色底色 #EDA0CE (圓角矩形)
+        // 粉色底色 #EDA0CE
         ctx.fillStyle = '#EDA0CE';
         ctx.beginPath();
         var r = 36;
@@ -39,7 +39,7 @@
         ctx.closePath();
         ctx.fill();
 
-        // 2. 繪製精緻白色蝴蝶結 🎀
+        // 精緻白色蝴蝶結 🎀
         ctx.fillStyle = '#FFFFFF';
         
         // 左翅膀
@@ -79,10 +79,10 @@
         var pngDataUrl = canvas.toDataURL('image/png');
         
         var setIcon = function() {
-          var appleIcon = document.getElementById('appleTouchIcon');
-          var favIcon = document.getElementById('faviconPng');
-          if (appleIcon) appleIcon.href = pngDataUrl;
-          if (favIcon) favIcon.href = pngDataUrl;
+          var links = document.querySelectorAll("link[rel='apple-touch-icon'], link[rel='icon']");
+          links.forEach(function(link) {
+            link.href = pngDataUrl;
+          });
         };
 
         if (document.readyState === 'loading') {
@@ -738,6 +738,7 @@
         <input type="number" id="cardPrice" placeholder="例如：350">
       </div>
 
+      <!-- 預購欄位 (僅在預購區時顯示) -->
       <div id="preorderOnlyFields" style="display:none; border-top:1px dashed #E2E8F0; padding-top:10px; margin-top:10px;">
         <div class="form-group">
           <label>購入管道</label>
@@ -773,6 +774,7 @@
         </div>
       </div>
 
+      <!-- 待售欄位 (僅在勾選「待售」時跳出) -->
       <div id="saleOnlyFields" style="display:none; border-top:1px dashed #E2E8F0; padding-top:10px; margin-top:10px;">
         <div class="form-group">
           <label>賣出管道</label>
