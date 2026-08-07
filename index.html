@@ -5,80 +5,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>小卡收藏</title>
 
-  <!-- iPhone / iPad 專屬 PNG 桌面圖示 (粉紅底 + 白色蝴蝶結 🎀) -->
-  <link rel="apple-touch-icon" sizes="180x180" id="appleTouchIcon" href="">
-  <link rel="icon" type="image/png" sizes="192x192" id="faviconPng" href="">
-
-  <!-- iOS PWA 獨立 App 設定 -->
+  <!-- iOS 獨立 App 設定 -->
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
   <meta name="apple-mobile-web-app-title" content="小卡收藏">
 
-  <!-- 即時繪製 iPhone 專用 PNG 高畫質圖示 -->
-  <script>
-    (function generatePNGIcon() {
-      try {
-        var canvas = document.createElement('canvas');
-        canvas.width = 180;
-        canvas.height = 180;
-        var ctx = canvas.getContext('2d');
-
-        ctx.fillStyle = '#EDA0CE';
-        ctx.beginPath();
-        var r = 36;
-        ctx.moveTo(r, 0);
-        ctx.lineTo(180 - r, 0);
-        ctx.quadraticCurveTo(180, 0, 180, r);
-        ctx.lineTo(180, 180 - r);
-        ctx.quadraticCurveTo(180, 180, 180 - r);
-        ctx.lineTo(r, 180);
-        ctx.quadraticCurveTo(0, 180, 0, 180 - r);
-        ctx.lineTo(0, r);
-        ctx.quadraticCurveTo(0, 0, r, 0);
-        ctx.closePath();
-        ctx.fill();
-
-        ctx.fillStyle = '#FFFFFF';
-        ctx.beginPath();
-        ctx.moveTo(90, 90);
-        ctx.bezierCurveTo(60, 50, 30, 60, 40, 85);
-        ctx.bezierCurveTo(45, 100, 70, 95, 90, 90);
-        ctx.fill();
-
-        ctx.beginPath();
-        ctx.moveTo(90, 90);
-        ctx.bezierCurveTo(120, 50, 150, 60, 140, 85);
-        ctx.bezierCurveTo(135, 100, 110, 95, 90, 90);
-        ctx.fill();
-
-        ctx.beginPath();
-        ctx.moveTo(85, 92);
-        ctx.lineTo(55, 135);
-        ctx.lineTo(70, 135);
-        ctx.lineTo(88, 98);
-        ctx.fill();
-
-        ctx.beginPath();
-        ctx.moveTo(95, 92);
-        ctx.lineTo(125, 135);
-        ctx.lineTo(110, 135);
-        ctx.lineTo(92, 98);
-        ctx.fill();
-
-        ctx.beginPath();
-        ctx.arc(90, 90, 11, 0, Math.PI * 2);
-        ctx.fill();
-
-        var pngDataUrl = canvas.toDataURL('image/png');
-        window.addEventListener('DOMContentLoaded', function() {
-          var appleIcon = document.getElementById('appleTouchIcon');
-          var favIcon = document.getElementById('faviconPng');
-          if (appleIcon) appleIcon.href = pngDataUrl;
-          if (favIcon) favIcon.href = pngDataUrl;
-        });
-      } catch(e) {}
-    })();
-  </script>
+  <!-- iPhone / iPad 專屬桌面圖示 (粉紅底 + 白色蝴蝶結 🎀) -->
+  <link rel="apple-touch-icon" href="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180' viewBox='0 0 180 180'><rect width='180' height='180' rx='36' fill='%23EDA0CE'/><path d='M90 90 C60 50 30 60 40 85 C45 100 70 95 90 90 Z' fill='%23FFFFFF'/><path d='M90 90 C120 50 150 60 140 85 C135 100 110 95 90 90 Z' fill='%23FFFFFF'/><path d='M85 92 L55 135 L70 135 L88 98 Z' fill='%23FFFFFF'/><path d='M95 92 L125 135 L110 135 L92 98 Z' fill='%23FFFFFF'/><circle cx='90' cy='90' r='11' fill='%23FFFFFF'/></svg>">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180' viewBox='0 0 180 180'><rect width='180' height='180' rx='36' fill='%23EDA0CE'/><path d='M90 90 C60 50 30 60 40 85 C45 100 70 95 90 90 Z' fill='%23FFFFFF'/><path d='M90 90 C120 50 150 60 140 85 C135 100 110 95 90 90 Z' fill='%23FFFFFF'/><path d='M85 92 L55 135 L70 135 L88 98 Z' fill='%23FFFFFF'/><path d='M95 92 L125 135 L110 135 L92 98 Z' fill='%23FFFFFF'/><circle cx='90' cy='90' r='11' fill='%23FFFFFF'/></svg>">
 
   <style>
     :root {
@@ -108,7 +42,6 @@
       min-height: 100vh;
     }
 
-    /* 頂部 Header */
     header {
       background: #FFFFFF;
       padding: 14px 18px;
@@ -137,7 +70,6 @@
       gap: 6px;
     }
 
-    /* 主分頁切換 (現貨 / 預購) */
     .tab-switch-container {
       display: flex;
       background: #EDF2F7;
@@ -166,7 +98,6 @@
       box-shadow: 0 2px 6px rgba(0,0,0,0.06);
     }
 
-    /* 導航列與搜尋 */
     .nav-bar {
       display: flex;
       flex-direction: column;
@@ -223,7 +154,6 @@
       color: var(--text-muted);
     }
 
-    /* 按鈕樣式 */
     .btn-group {
       display: flex;
       gap: 6px;
@@ -277,7 +207,6 @@
       align-items: center;
     }
 
-    /* 資料夾網格 */
     .folder-grid {
       display: grid;
       grid-template-columns: repeat(2, 1fr);
@@ -348,7 +277,6 @@
       cursor: pointer;
     }
 
-    /* 小卡網格 */
     .card-grid {
       display: grid;
       grid-template-columns: repeat(2, 1fr);
@@ -433,7 +361,6 @@
       margin-top: 2px;
     }
 
-    /* 切換卡面/卡背按鈕 */
     .photo-toggle-tabs {
       display: flex;
       gap: 8px;
@@ -459,7 +386,6 @@
       border-color: var(--primary);
     }
 
-    /* Modal 樣式 */
     .modal {
       display: none;
       position: fixed;
@@ -613,7 +539,6 @@
 </head>
 <body>
 
-  <!-- 頂部 Header -->
   <header>
     <h1>💖 小卡收藏</h1>
     <div class="header-right">
@@ -622,13 +547,11 @@
     </div>
   </header>
 
-  <!-- 主頁面切換：現貨小卡 / 📦 預購區 -->
   <div class="tab-switch-container">
     <button class="tab-switch-btn active" id="tabSpotBtn" onclick="switchMainView('spot')">現貨小卡冊</button>
     <button class="tab-switch-btn" id="tabPreorderBtn" onclick="switchMainView('preorder')">📦 預購區</button>
   </div>
 
-  <!-- 導航列與搜尋 -->
   <div class="nav-bar">
     <div class="nav-top">
       <div class="path-title">
@@ -644,19 +567,17 @@
     <div class="search-box">
       <div style="position:relative; flex:1;">
         <span class="search-icon">🔍</span>
-        <input type="text" id="searchInput" placeholder="搜尋卡名、分類、管道、買賣家..." oninput="handleSearchInput()">
+        <input type="text" id="searchInput" placeholder="搜尋卡名、分類、備註、買賣家..." oninput="handleSearchInput()">
       </div>
       <button class="btn-icon" onclick="openModal('filterModal')">⚙️ 排序</button>
     </div>
   </div>
 
-  <!-- 資料夾展示區 -->
   <div id="folderSection" style="display:none;">
     <div class="section-title">資料夾</div>
     <div class="folder-grid" id="folderGrid"></div>
   </div>
 
-  <!-- 小卡展示區 -->
   <div id="cardSection" style="display:none;">
     <div class="section-title">
       <span id="cardSectionTitle">小卡清單</span>
@@ -665,13 +586,11 @@
     <div class="card-grid" id="cardGrid"></div>
   </div>
 
-  <!-- 空白提示區 -->
   <div class="empty-state" id="emptyState" style="display:none;">
     <div>🎀</div>
     <p>這裡還沒有資料夾或小卡喔！<br>點擊上方按鈕開始建立吧！</p>
   </div>
 
-  <!-- 新增資料夾 Modal -->
   <div class="modal" id="folderModal">
     <div class="modal-content">
       <div class="modal-header">
@@ -690,7 +609,6 @@
     </div>
   </div>
 
-  <!-- 編輯資料夾 Modal -->
   <div class="modal" id="editFolderModal">
     <div class="modal-content">
       <div class="modal-header">
@@ -709,7 +627,7 @@
     </div>
   </div>
 
-  <!-- 新增小卡 Modal (直觀樹狀資料夾選單) -->
+  <!-- 新增小卡 Modal (動態展開待售/預購欄位) -->
   <div class="modal" id="cardModal">
     <div class="modal-content">
       <div class="modal-header">
@@ -717,7 +635,6 @@
         <span style="cursor:pointer; font-size:1.2rem;" onclick="closeModal('cardModal')">✕</span>
       </div>
 
-      <!-- 直觀樹狀資料夾選單 -->
       <div class="form-group">
         <label>🌳 放置資料夾 (樹狀層級)</label>
         <select id="cardFolderSelect"></select>
@@ -729,7 +646,7 @@
       </div>
 
       <div class="form-group" style="display:flex; align-items:center; gap:8px;">
-        <input type="checkbox" id="cardIsForSale" style="width:auto;">
+        <input type="checkbox" id="cardIsForSale" style="width:auto;" onchange="toggleAddSaleFields()">
         <label for="cardIsForSale" style="margin:0; cursor:pointer;">🏷️ 標記為「待售 / 可換」(同步顯示於待售區)</label>
       </div>
 
@@ -757,7 +674,7 @@
         <input type="number" id="cardPrice" placeholder="例如：350">
       </div>
 
-      <!-- 預購額外欄位 -->
+      <!-- 預購欄位 (僅在預購區時顯示) -->
       <div id="preorderOnlyFields" style="display:none; border-top:1px dashed #E2E8F0; padding-top:10px; margin-top:10px;">
         <div class="form-group">
           <label>購入管道</label>
@@ -793,8 +710,8 @@
         </div>
       </div>
 
-      <!-- 待售額外欄位 -->
-      <div id="saleOnlyFields" style="border-top:1px dashed #E2E8F0; padding-top:10px; margin-top:10px;">
+      <!-- 買家欄位 (僅在勾選「待售」時跳出) -->
+      <div id="saleOnlyFields" style="display:none; border-top:1px dashed #E2E8F0; padding-top:10px; margin-top:10px;">
         <div class="form-group">
           <label>賣出管道</label>
           <select id="addSellChannel" onchange="toggleCustomCategory(this, 'addSellChannelOther')">
@@ -825,7 +742,7 @@
       </div>
 
       <div class="form-group">
-        <label>備註</label>
+        <label>備註 (卡況、交換意願等)</label>
         <textarea id="cardNote" placeholder="例如：無瑕拆封、可換同款燦烈"></textarea>
       </div>
       <button class="btn" type="button" id="btnCreateCard" style="width:100%; padding:12px; margin-top:8px;" onclick="addCard()">儲存小卡</button>
@@ -851,7 +768,7 @@
       </div>
 
       <div class="form-group" style="display:flex; align-items:center; gap:8px;">
-        <input type="checkbox" id="editCardIsForSale" style="width:auto;">
+        <input type="checkbox" id="editCardIsForSale" style="width:auto;" onchange="toggleEditSaleFields()">
         <label for="editCardIsForSale" style="margin:0; cursor:pointer;">🏷️ 標記為「待售 / 可換」(同步顯示於待售區)</label>
       </div>
 
@@ -879,6 +796,14 @@
         <input type="number" id="editCardPrice">
       </div>
 
+      <!-- 買家編輯欄位 (僅在勾選「待售」時跳出) -->
+      <div id="editSaleOnlyFields" style="display:none; border-top:1px dashed #E2E8F0; padding-top:10px; margin-top:10px;">
+        <div class="form-group">
+          <label>買家 ID / 帳號</label>
+          <input type="text" id="editBuyerId" placeholder="例如：小明 / @buyer_id">
+        </div>
+      </div>
+
       <div class="form-group">
         <label>備註</label>
         <textarea id="editCardNote"></textarea>
@@ -887,7 +812,6 @@
     </div>
   </div>
 
-  <!-- 查看小卡詳情 Modal -->
   <div class="modal" id="detailModal">
     <div class="modal-content">
       <div class="modal-header">
@@ -921,7 +845,6 @@
     </div>
   </div>
 
-  <!-- 轉現貨選擇資料夾 Modal -->
   <div class="modal" id="transferModal">
     <div class="modal-content">
       <div class="modal-header">
@@ -939,7 +862,6 @@
     </div>
   </div>
 
-  <!-- 🛍️ 專屬待售區 Modal -->
   <div class="modal" id="saleModal">
     <div class="modal-content">
       <div class="modal-header">
@@ -954,7 +876,6 @@
     </div>
   </div>
 
-  <!-- 排序 Modal -->
   <div class="modal" id="filterModal">
     <div class="modal-content">
       <div class="modal-header">
@@ -974,7 +895,6 @@
     </div>
   </div>
 
-  <!-- 📊 統計 Modal -->
   <div class="modal" id="statsModal">
     <div class="modal-content">
       <div class="modal-header">
@@ -1005,7 +925,6 @@
     </div>
   </div>
 
-  <!-- 備份與設定 Modal -->
   <div class="modal" id="backupModal">
     <div class="modal-content">
       <div class="modal-header">
@@ -1028,14 +947,13 @@
 
   <div class="toast" id="toast">已更新資料</div>
 
-  <!-- 核心邏輯腳本 -->
   <script>
     var DB_NAME = 'PhotocardApp_DB';
     var DB_VERSION = 1;
     var dbInstance = null;
     var appData = { folders: [], cards: [] };
 
-    var currentMainTab = 'spot'; // 'spot' | 'preorder'
+    var currentMainTab = 'spot';
     var currentSpotFolderId = null;
     var currentPreorderFolderId = null;
     var folderStack = [];
@@ -1119,6 +1037,7 @@
           if (!c.status) c.status = 'acquired';
           if (c.isForSale === undefined) c.isForSale = false;
           if (!c.tradePhotos) c.tradePhotos = [];
+          if (!c.note) c.note = '';
         });
       }
       if (appData && Array.isArray(appData.folders)) {
@@ -1161,7 +1080,6 @@
       render();
     }
 
-    // 建立樹狀資料夾選項 (階層縮排)
     function buildFolderTreeOptions(typeFilter, selectedId) {
       var optionsHtml = '<option value="">📁 首頁 (根目錄)</option>';
 
@@ -1196,6 +1114,8 @@
           
           var isPreorder = currentMainTab === 'preorder';
           document.getElementById('preorderOnlyFields').style.display = isPreorder ? 'block' : 'none';
+          
+          toggleAddSaleFields();
         }
 
         if (id === 'saleModal') renderSaleList();
@@ -1220,6 +1140,16 @@
         toast.classList.add('show');
         setTimeout(function() { toast.classList.remove('show'); }, 2500);
       }
+    }
+
+    function toggleAddSaleFields() {
+      var isChecked = document.getElementById('cardIsForSale').checked;
+      document.getElementById('saleOnlyFields').style.display = isChecked ? 'block' : 'none';
+    }
+
+    function toggleEditSaleFields() {
+      var isChecked = document.getElementById('editCardIsForSale').checked;
+      document.getElementById('editSaleOnlyFields').style.display = isChecked ? 'block' : 'none';
     }
 
     function compressImage(file, maxWidth, quality) {
@@ -1302,7 +1232,6 @@
       folderGrid.innerHTML = '';
       cardGrid.innerHTML = '';
 
-      // 設定路徑標題
       if (searchQuery) {
         backBtn.style.display = 'none';
         currentPath.innerText = '🔍 搜尋結果';
@@ -1317,7 +1246,6 @@
 
       var targetStatus = (currentMainTab === 'spot') ? 'acquired' : 'shipping';
 
-      // 1. 渲染資料夾 (非搜尋狀態下)
       if (!searchQuery) {
         var visibleFolders = appData.folders.filter(function(f) { 
           return String(f.parentId) === String(activeFolderId) && (f.type || 'spot') === currentMainTab; 
@@ -1351,21 +1279,20 @@
         folderSection.style.display = 'none';
       }
 
-      // 2. 渲染小卡
       var visibleCards = [];
       if (searchQuery) {
-        // 全局模糊搜尋 (跨資料夾)
+        // 全局模糊搜尋：加入「備註 (note)」為可搜尋關鍵字
         visibleCards = appData.cards.filter(function(c) {
           if (c.status !== targetStatus) return false;
           return (c.name || '').toLowerCase().indexOf(searchQuery) !== -1 ||
                  (c.category || '').toLowerCase().indexOf(searchQuery) !== -1 ||
+                 (c.note || '').toLowerCase().indexOf(searchQuery) !== -1 ||
                  (c.source || '').toLowerCase().indexOf(searchQuery) !== -1 ||
                  (c.buyChannel || '').toLowerCase().indexOf(searchQuery) !== -1 ||
                  (c.sellerId || '').toLowerCase().indexOf(searchQuery) !== -1 ||
                  (c.buyerId || '').toLowerCase().indexOf(searchQuery) !== -1;
         });
       } else {
-        // 當前層級小卡
         visibleCards = appData.cards.filter(function(c) { 
           return String(c.folderId) === String(activeFolderId) && c.status === targetStatus; 
         });
@@ -1508,7 +1435,6 @@
       }
     }
 
-    // 新增小卡 (防呆保護)
     async function addCard() {
       var nameInput = document.getElementById('cardName');
       var btn = document.getElementById('btnCreateCard');
@@ -1613,7 +1539,10 @@
       var editNameInput = document.getElementById('editCardName');
       editNameInput.value = card.name || '';
       document.getElementById('editCardIsForSale').checked = !!card.isForSale;
-      
+      toggleEditSaleFields();
+
+      document.getElementById('editBuyerId').value = card.buyerId || '';
+
       document.getElementById('editCardImageFront').value = '';
       document.getElementById('editCardImageBack').value = '';
 
@@ -1655,7 +1584,12 @@
         var folderVal = document.getElementById('editCardFolderSelect').value;
         appData.cards[cardIndex].folderId = folderVal ? Number(folderVal) : null;
         appData.cards[cardIndex].name = name;
-        appData.cards[cardIndex].isForSale = document.getElementById('editCardIsForSale').checked;
+        
+        var isForSale = document.getElementById('editCardIsForSale').checked;
+        appData.cards[cardIndex].isForSale = isForSale;
+        if (isForSale) {
+          appData.cards[cardIndex].buyerId = (document.getElementById('editBuyerId').value || '').trim();
+        }
 
         var selectCat = document.getElementById('editCardCategory').value;
         var customCat = (document.getElementById('editCustomCategory').value || '').trim();
@@ -1739,7 +1673,6 @@
       }
     }
 
-    // 開啟轉現貨 Modal (載入現貨樹狀資料夾)
     function openTransferModal() {
       closeModal('detailModal');
       var treeSelect = document.getElementById('transferFolderSelect');
@@ -1761,7 +1694,6 @@
       }
     }
 
-    // 渲染待售區 Modal
     function renderSaleList() {
       var listEl = document.getElementById('saleCardList');
       listEl.innerHTML = '';
