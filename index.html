@@ -753,7 +753,6 @@
         <input type="number" id="cardPrice" placeholder="例如：350">
       </div>
 
-      <!-- 預購欄位 (僅在預購區時顯示) -->
       <div id="preorderOnlyFields" style="display:none; border-top:1px dashed #E2E8F0; padding-top:10px; margin-top:10px;">
         <div class="form-group">
           <label>購入管道</label>
@@ -789,7 +788,6 @@
         </div>
       </div>
 
-      <!-- 待售欄位 (僅在勾選「待售」時跳出) -->
       <div id="saleOnlyFields" style="display:none; border-top:1px dashed #E2E8F0; padding-top:10px; margin-top:10px;">
         <div class="form-group">
           <label>賣出管道</label>
@@ -930,7 +928,6 @@
     </div>
   </div>
 
-  <!-- 標記已售出 Modal -->
   <div class="modal" id="markSoldModal">
     <div class="modal-content">
       <div class="modal-header">
@@ -980,7 +977,6 @@
     </div>
   </div>
 
-  <!-- 🗃️ 已售出歸檔區 Modal -->
   <div class="modal" id="soldArchiveModal">
     <div class="modal-content">
       <div class="modal-header">
@@ -1084,7 +1080,7 @@
       </div>
       <div style="display:flex; flex-direction:column; gap:10px;">
         <button class="btn" type="button" style="width:100%; padding:11px;" onclick="openModal('statsModal')">📊 查看收藏數據統計</button>
-        <button class="btn" type="button" style="width:100%; padding:11px;" onclick="exportExcel()">📊 導出標準 Excel 表格 (.csv)</button>
+        <button class="btn" type="button" style="width:100%; padding:11px;" onclick="exportExcel()">📊 導出 Excel 工作表 (.xls)</button>
         <button class="btn btn-secondary" type="button" style="width:100%; padding:11px;" onclick="exportData()">📥 匯出完整 JSON 備份檔</button>
         <div style="border-top:1px dashed #E2E8F0; margin:4px 0;"></div>
         <div class="form-group">
@@ -1842,7 +1838,6 @@
       }
     }
 
-    // 開啟標記已售出 Modal
     function openMarkSoldModal() {
       if (!currentDetailCard) return;
       closeModal('detailModal');
@@ -1892,7 +1887,6 @@
       showToast('🎉 已成功歸檔至「已售出」專區！');
     }
 
-    // 渲染已售出歸檔清單
     function renderSoldArchiveList() {
       var listEl = document.getElementById('soldCardList');
       listEl.innerHTML = '';
@@ -2036,62 +2030,88 @@
       document.getElementById('statSoldRevenue').innerText = '$ ' + soldRevenue.toLocaleString() + ' NTD';
     }
 
-    // 純文字標準 Excel 導出 (.csv)
+    // 導出標準 Excel 工作表 (.xls)
     function exportExcel() {
       if (!appData.cards || appData.cards.length === 0) {
         return alert('目前沒有任何小卡紀錄可供匯出！');
       }
 
-      var csvRows = [];
-      csvRows.push([
-        '小卡名稱', 
-        '分類', 
-        '狀態', 
-        '待售標記', 
-        '購入金額(NTD)', 
-        '售出金額(NTD)', 
-        '購入日期', 
-        '售出日期', 
-        '購入管道/賣家', 
-        '售出管道/買家', 
-        '訂單編號', 
-        '備註'
-      ]);
-
       var statusTextMap = { acquired: '現貨', shipping: '預購', sold: '已售出' };
+
+      var tableRows = `
+        <tr style="background-color:#EDA0CE; color:#FFFFFF; font-weight:bold;">
+          <th style="border:1px solid #CCCCCC; padding:8px;">小卡名稱</th>
+          <th style="border:1px solid #CCCCCC; padding:8px;">分類</th>
+          <th style="border:1px solid #CCCCCC; padding:8px;">狀態</th>
+          <th style="border:1px solid #CCCCCC; padding:8px;">待售標記</th>
+          <th style="border:1px solid #CCCCCC; padding:8px;">購入金額(NTD)</th>
+          <th style="border:1px solid #CCCCCC; padding:8px;">售出金額(NTD)</th>
+          <th style="border:1px solid #CCCCCC; padding:8px;">購入日期</th>
+          <th style="border:1px solid #CCCCCC; padding:8px;">售出日期</th>
+          <th style="border:1px solid #CCCCCC; padding:8px;">購入管道/賣家</th>
+          <th style="border:1px solid #CCCCCC; padding:8px;">售出管道/買家</th>
+          <th style="border:1px solid #CCCCCC; padding:8px;">訂單編號</th>
+          <th style="border:1px solid #CCCCCC; padding:8px;">備註</th>
+        </tr>
+      `;
 
       appData.cards.forEach(function(card) {
         var channelBuy = card.buyChannel ? card.buyChannel + ' (' + (card.sellerId||'') + ')' : (card.source || '');
         var channelSell = card.soldChannel ? card.soldChannel + ' (' + (card.soldBuyerId||'') + ')' : (card.buyerId || '');
 
-        var row = [
-          '"' + (card.name || '').replace(/"/g, '""') + '"',
-          '"' + (card.category || '').replace(/"/g, '""') + '"',
-          '"' + (statusTextMap[card.status] || '現貨') + '"',
-          '"' + (card.isForSale ? '是' : '否') + '"',
-          card.price || 0,
-          card.soldPrice || 0,
-          '"' + (card.purchaseDate || '') + '"',
-          '"' + (card.soldDate || '') + '"',
-          '"' + channelBuy.replace(/"/g, '""') + '"',
-          '"' + channelSell.replace(/"/g, '""') + '"',
-          '"' + (card.soldOrderNo || '').replace(/"/g, '""') + '"',
-          '"' + (card.soldNote || card.note || '').replace(/"/g, '""') + '"'
-        ];
-        csvRows.push(row.join(','));
+        tableRows += `
+          <tr>
+            <td style="border:1px solid #CCCCCC; padding:6px;">${card.name || ''}</td>
+            <td style="border:1px solid #CCCCCC; padding:6px;">${card.category || ''}</td>
+            <td style="border:1px solid #CCCCCC; padding:6px;">${statusTextMap[card.status] || '現貨'}</td>
+            <td style="border:1px solid #CCCCCC; padding:6px;">${card.isForSale ? '是' : '否'}</td>
+            <td style="border:1px solid #CCCCCC; padding:6px;">${card.price || 0}</td>
+            <td style="border:1px solid #CCCCCC; padding:6px;">${card.soldPrice || 0}</td>
+            <td style="border:1px solid #CCCCCC; padding:6px;">${card.purchaseDate || ''}</td>
+            <td style="border:1px solid #CCCCCC; padding:6px;">${card.soldDate || ''}</td>
+            <td style="border:1px solid #CCCCCC; padding:6px;">${channelBuy}</td>
+            <td style="border:1px solid #CCCCCC; padding:6px;">${channelSell}</td>
+            <td style="border:1px solid #CCCCCC; padding:6px;">${card.soldOrderNo || ''}</td>
+            <td style="border:1px solid #CCCCCC; padding:6px;">${card.soldNote || card.note || ''}</td>
+          </tr>
+        `;
       });
 
-      var csvString = '\uFEFF' + csvRows.join('\n');
-      var blob = new Blob([csvString], { type: 'text/csv;charset=utf-8;' });
+      var excelTemplate = `
+        <html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40">
+        <head>
+          <meta charset="utf-8">
+          <!--[if gte mso 9]>
+          <xml>
+            <x:ExcelWorkbook>
+              <x:ExcelWorksheets>
+                <x:ExcelWorksheet>
+                  <x:Name>小卡收藏清單</x:Name>
+                  <x:WorksheetOptions>
+                    <x:DisplayGridlines/>
+                  </x:WorksheetOptions>
+                </x:ExcelWorksheet>
+              </x:ExcelWorksheets>
+            </x:ExcelWorkbook>
+          </xml>
+          <![endif]-->
+        </head>
+        <body>
+          <table>${tableRows}</table>
+        </body>
+        </html>
+      `;
+
+      var blob = new Blob([excelTemplate], { type: 'application/vnd.ms-excel;charset=utf-8' });
       var url = URL.createObjectURL(blob);
       var a = document.createElement('a');
       a.href = url;
-      a.download = '小卡收藏清單_純文字報表_' + new Date().toISOString().slice(0, 10) + '.csv';
+      a.download = '小卡收藏清單_' + new Date().toISOString().slice(0, 10) + '.xls';
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
       URL.revokeObjectURL(url);
-      showToast('📊 標準 Excel 表格 (.csv) 已下載！');
+      showToast('📊 Excel 工作表 (.xls) 已下載！');
     }
 
     function deleteFolder(id) {
