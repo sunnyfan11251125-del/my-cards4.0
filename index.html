@@ -112,7 +112,7 @@
     body {
       background-color: var(--bg-color);
       color: var(--text-main);
-      padding-bottom: 60px;
+      padding-bottom: 70px;
       min-height: 100vh;
     }
 
@@ -407,6 +407,16 @@
       z-index: 5;
     }
 
+    .select-checkbox-badge {
+      position: absolute;
+      top: 8px;
+      left: 8px;
+      z-index: 15;
+      width: 24px;
+      height: 24px;
+      cursor: pointer;
+    }
+
     .double-side-badge {
       position: absolute;
       bottom: 8px;
@@ -458,6 +468,23 @@
       background: var(--primary-light);
       color: var(--primary-dark);
       border-color: var(--primary);
+    }
+
+    /* 多選模式浮動底列 */
+    .batch-bar {
+      position: fixed;
+      bottom: 16px;
+      left: 16px;
+      right: 16px;
+      background: rgba(45, 55, 72, 0.95);
+      color: white;
+      padding: 12px 18px;
+      border-radius: 30px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      z-index: 100;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.25);
     }
 
     .modal {
@@ -665,10 +692,22 @@
 
   <div id="cardSection" style="display:none;">
     <div class="section-title">
-      <span id="cardSectionTitle">小卡清單</span>
-      <span id="cardCountBadge" style="font-size:0.75rem; color:var(--text-muted);"></span>
+      <div>
+        <span id="cardSectionTitle">小卡清單</span>
+        <span id="cardCountBadge" style="font-size:0.75rem; color:var(--text-muted);"></span>
+      </div>
+      <button class="btn-icon" id="btnToggleSelectMode" onclick="toggleSelectMode()">☑️ 多選</button>
     </div>
     <div class="card-grid" id="cardGrid"></div>
+  </div>
+
+  <!-- 多選模式下的底部浮動工具列 -->
+  <div class="batch-bar" id="batchBar" style="display:none;">
+    <span id="batchCountText" style="font-weight:700; font-size:0.9rem;">已選擇 0 張小卡</span>
+    <div style="display:flex; gap:8px;">
+      <button class="btn btn-secondary" style="padding:6px 12px; font-size:0.8rem;" onclick="toggleSelectMode(false)">取消</button>
+      <button class="btn" style="padding:6px 14px; font-size:0.8rem; background:#C5221F;" onclick="openBatchSoldModal()">🎉 批量售出</button>
+    </div>
   </div>
 
   <div class="empty-state" id="emptyState" style="display:none;">
@@ -902,7 +941,6 @@
     </div>
   </div>
 
-  <!-- 小卡詳情 Modal (相容已售出與現貨預購) -->
   <div class="modal" id="detailModal">
     <div class="modal-content">
       <div class="modal-header">
@@ -926,7 +964,6 @@
         <div>🛒 <strong>管道 / 買賣家：</strong> <span id="detailSource"></span></div>
         <div id="detailShipRow" style="display:none;">📦 <strong>寄件方式：</strong> <span id="detailShipMethod"></span></div>
         
-        <!-- 已售出專屬區塊 -->
         <div id="soldDetailInfoBlock" style="display:none; border-top:1px dashed #E2E8F0; padding-top:8px; margin-top:4px;">
           <div>📅 <strong>售出日期：</strong> <span id="detailSoldDate"></span></div>
           <div>💰 <strong>實際售價：</strong> <span id="detailSoldPrice"></span></div>
@@ -956,7 +993,7 @@
   <div class="modal" id="markSoldModal">
     <div class="modal-content">
       <div class="modal-header">
-        <h3>🎉 標記為已售出</h3>
+        <h3 id="soldModalHeaderTitle">🎉 標記為已售出</h3>
         <span style="cursor:pointer; font-size:1.2rem;" onclick="closeModal('markSoldModal')">✕</span>
       </div>
       <div class="form-group">
@@ -968,7 +1005,7 @@
         <input type="text" id="soldBuyerId" placeholder="例如：小明 / @buyer_id">
       </div>
       <div class="form-group">
-        <label>實際售價 ($ NTD)</label>
+        <label id="soldPriceLabel">實際售價 ($ NTD)</label>
         <input type="number" id="soldPrice" placeholder="例如：350">
       </div>
       <div class="form-group">
@@ -1134,6 +1171,10 @@
     var editingCardId = null;
     var currentDetailCard = null;
 
+    var isSelectMode = false;
+    var selectedCardIds = [];
+    var isBatchSold = false;
+
     var activeSort = 'newest';
 
     function initStorage() {
@@ -1248,6 +1289,7 @@
     function switchMainView(tab) {
       currentMainTab = tab;
       folderStack = [];
+      toggleSelectMode(false);
       document.getElementById('tabSpotBtn').className = 'tab-switch-btn ' + (tab === 'spot' ? 'active' : '');
       document.getElementById('tabPreorderBtn').className = 'tab-switch-btn ' + (tab === 'preorder' ? 'active' : '');
       document.getElementById('searchInput').value = '';
@@ -1317,6 +1359,35 @@
         toast.innerText = msg;
         toast.classList.add('show');
         setTimeout(function() { toast.classList.remove('show'); }, 2500);
+      }
+    }
+
+    function toggleSelectMode(forceState) {
+      isSelectMode = (forceState !== undefined) ? forceState : !isSelectMode;
+      selectedCardIds = [];
+      document.getElementById('btnToggleSelectMode').innerText = isSelectMode ? '✕ 取消多選' : '☑️ 多選';
+      updateBatchBar();
+      render();
+    }
+
+    function toggleCardSelection(cardId, event) {
+      event.stopPropagation();
+      var idx = selectedCardIds.indexOf(String(cardId));
+      if (idx !== -1) {
+        selectedCardIds.splice(idx, 1);
+      } else {
+        selectedCardIds.push(String(cardId));
+      }
+      updateBatchBar();
+    }
+
+    function updateBatchBar() {
+      var bar = document.getElementById('batchBar');
+      if (isSelectMode && selectedCardIds.length > 0) {
+        bar.style.display = 'flex';
+        document.getElementById('batchCountText').innerText = '已選擇 ' + selectedCardIds.length + ' 張小卡';
+      } else {
+        bar.style.display = 'none';
       }
     }
 
@@ -1429,7 +1500,7 @@
           return String(f.parentId) === String(activeFolderId) && (f.type || 'spot') === currentMainTab; 
         });
 
-        if (visibleFolders.length > 0) {
+        if (visibleFolders.length > 0 && !isSelectMode) {
           folderSection.style.display = 'block';
           visibleFolders.forEach(function(folder) {
             var cardCount = countCardsInFolder(folder.id);
@@ -1492,16 +1563,29 @@
           var frontImg = card.imageFront || card.image || '';
           var hasBack = !!card.imageBack;
           var isForSale = card.isForSale;
+          var isSelected = selectedCardIds.indexOf(String(card.id)) !== -1;
 
           var item = document.createElement('div');
           item.className = 'photocard-item';
-          item.onclick = function() { showCardDetail(card.id); };
+          item.onclick = function() {
+            if (isSelectMode) {
+              toggleCardSelection(card.id, event);
+            } else {
+              showCardDetail(card.id);
+            }
+          };
+
+          var selectBoxHtml = isSelectMode ? `<input type="checkbox" class="select-checkbox-badge" ${isSelected ? 'checked' : ''} onclick="toggleCardSelection('${card.id}', event)">` : '';
+
           item.innerHTML = `
-            ${isForSale ? '<span class="sale-badge">待售/可換</span>' : ''}
+            ${selectBoxHtml}
+            ${(!isSelectMode && isForSale) ? '<span class="sale-badge">待售/可換</span>' : ''}
+            ${!isSelectMode ? `
             <div class="folder-actions" style="top:8px; right:8px; z-index:5;">
               <button class="btn-circle" type="button" title="編輯" onclick="event.stopPropagation(); openEditCardModal('${card.id}')">✏️</button>
               <button class="btn-circle" type="button" title="刪除" onclick="event.stopPropagation(); deleteCard('${card.id}')">✕</button>
             </div>
+            ` : ''}
             <img src="${frontImg}" alt="${card.name}">
             ${hasBack ? '<span class="double-side-badge">🔄 雙面</span>' : ''}
             <div class="photocard-info">
@@ -1816,6 +1900,8 @@
       if (!card) return;
 
       currentDetailCard = card;
+      isBatchSold = false;
+
       document.getElementById('detailTitle').innerText = card.name;
       document.getElementById('detailCategory').innerText = card.category;
       document.getElementById('detailPurchaseDate').innerText = card.purchaseDate || '未填寫';
@@ -1828,7 +1914,6 @@
       var isSold = card.status === 'sold';
       var isShipping = card.status === 'shipping';
 
-      // 售出專屬區塊
       var soldBlock = document.getElementById('soldDetailInfoBlock');
       var btnMarkSold = document.getElementById('btnMarkAsSold');
       var btnUnmarkSold = document.getElementById('btnUnmarkSold');
@@ -1854,7 +1939,7 @@
 
         btnMarkSold.style.display = 'none';
         btnUnmarkSold.style.display = 'inline-flex';
-        editGroup.style.display = 'none'; // 已售出的不開放小卡冊內部編輯
+        editGroup.style.display = 'none';
       } else {
         soldBlock.style.display = 'none';
         btnMarkSold.style.display = 'inline-flex';
@@ -1904,7 +1989,10 @@
       if (!currentDetailCard) return;
       closeModal('detailModal');
       
+      isBatchSold = false;
       var today = new Date().toISOString().slice(0, 10);
+      document.getElementById('soldModalHeaderTitle').innerText = '🎉 標記為已售出';
+      document.getElementById('soldPriceLabel').innerText = '實際售價 ($ NTD)';
       document.getElementById('soldDate').value = today;
       document.getElementById('soldBuyerId').value = currentDetailCard.buyerId || '';
       document.getElementById('soldPrice').value = currentDetailCard.price || '';
@@ -1914,12 +2002,32 @@
       openModal('markSoldModal');
     }
 
+    function openBatchSoldModal() {
+      if (selectedCardIds.length === 0) return alert('請先勾選要售出的小卡！');
+
+      isBatchSold = true;
+      var today = new Date().toISOString().slice(0, 10);
+      
+      var totalPriceSum = 0;
+      appData.cards.forEach(function(c) {
+        if (selectedCardIds.indexOf(String(c.id)) !== -1 && c.price) {
+          var p = Number(c.price);
+          if (!isNaN(p)) totalPriceSum += p;
+        }
+      });
+
+      document.getElementById('soldModalHeaderTitle').innerText = '🎉 批量售出 (' + selectedCardIds.length + ' 張小卡)';
+      document.getElementById('soldPriceLabel').innerText = '整批實際總售價 ($ NTD)';
+      document.getElementById('soldDate').value = today;
+      document.getElementById('soldBuyerId').value = '';
+      document.getElementById('soldPrice').value = totalPriceSum || '';
+      document.getElementById('soldOrderNo').value = '';
+      document.getElementById('soldNote').value = '';
+
+      openModal('markSoldModal');
+    }
+
     async function confirmMarkAsSold() {
-      if (!currentDetailCard) return;
-
-      var cardIndex = appData.cards.findIndex(function(c) { return String(c.id) === String(currentDetailCard.id); });
-      if (cardIndex === -1) return;
-
       var soldDate = document.getElementById('soldDate').value || new Date().toISOString().slice(0, 10);
       var soldBuyerId = (document.getElementById('soldBuyerId').value || '').trim();
       var soldPrice = document.getElementById('soldPrice').value || '';
@@ -1931,25 +2039,49 @@
       var photoFiles = document.getElementById('soldProofPhotos').files;
       var proofPhotos = await compressMultipleImages(photoFiles);
 
-      appData.cards[cardIndex].status = 'sold';
-      appData.cards[cardIndex].isForSale = false;
-      appData.cards[cardIndex].soldDate = soldDate;
-      appData.cards[cardIndex].soldBuyerId = soldBuyerId;
-      appData.cards[cardIndex].soldPrice = soldPrice;
-      appData.cards[cardIndex].soldChannel = soldChannel;
-      appData.cards[cardIndex].soldOrderNo = soldOrderNo;
-      appData.cards[cardIndex].soldNote = soldNote;
-      if (proofPhotos.length > 0) {
-        appData.cards[cardIndex].soldProofPhotos = proofPhotos;
+      if (isBatchSold) {
+        // 批量歸檔多張小卡
+        var avgPriceEach = (soldPrice && selectedCardIds.length > 0) ? Math.round(Number(soldPrice) / selectedCardIds.length) : '';
+
+        appData.cards.forEach(function(c) {
+          if (selectedCardIds.indexOf(String(c.id)) !== -1) {
+            c.status = 'sold';
+            c.isForSale = false;
+            c.soldDate = soldDate;
+            c.soldBuyerId = soldBuyerId;
+            c.soldPrice = avgPriceEach || c.price || '';
+            c.soldChannel = soldChannel;
+            c.soldOrderNo = soldOrderNo;
+            c.soldNote = soldNote;
+            if (proofPhotos.length > 0) c.soldProofPhotos = proofPhotos;
+          }
+        });
+
+        toggleSelectMode(false);
+        showToast('🎉 成功批量歸檔 ' + selectedCardIds.length + ' 張小卡至已售出！');
+      } else {
+        // 單張歸檔
+        if (!currentDetailCard) return;
+        var cardIndex = appData.cards.findIndex(function(c) { return String(c.id) === String(currentDetailCard.id); });
+        if (cardIndex !== -1) {
+          appData.cards[cardIndex].status = 'sold';
+          appData.cards[cardIndex].isForSale = false;
+          appData.cards[cardIndex].soldDate = soldDate;
+          appData.cards[cardIndex].soldBuyerId = soldBuyerId;
+          appData.cards[cardIndex].soldPrice = soldPrice;
+          appData.cards[cardIndex].soldChannel = soldChannel;
+          appData.cards[cardIndex].soldOrderNo = soldOrderNo;
+          appData.cards[cardIndex].soldNote = soldNote;
+          if (proofPhotos.length > 0) appData.cards[cardIndex].soldProofPhotos = proofPhotos;
+        }
+        showToast('🎉 已成功歸檔至「已售出」專區！');
       }
 
       saveData();
       render();
       closeModal('markSoldModal');
-      showToast('🎉 已成功歸檔至「已售出」專區！');
     }
 
-    // 渲染已售出歸檔清單 (左側呈現卡面小縮圖，點擊可開啟詳情視窗)
     function renderSoldArchiveList() {
       var listEl = document.getElementById('soldCardList');
       listEl.innerHTML = '';
